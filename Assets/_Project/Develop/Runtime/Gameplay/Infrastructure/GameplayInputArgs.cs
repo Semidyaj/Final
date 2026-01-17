@@ -1,14 +1,15 @@
-﻿using Assets._Project.Develop.Runtime.Utilities.SceneManagment;
+﻿using Assets._Project.Develop.Runtime.Gameplay.Features;
+using Assets._Project.Develop.Runtime.Utilities.SceneManagment;
 
 namespace Assets._Project.Develop.Runtime.Gameplay.Infrastructure
 {
     public class GameplayInputArgs : IInputSceneArgs
     {
-        public GameplayInputArgs(int levelNumber)
+        public GameplayInputArgs(GameplayTypes type)
         {
-            LevelNumber = levelNumber;
+            Type = type;
         }
 
-        public int LevelNumber { get; }
+        public GameplayTypes Type { get; }
     }
 }

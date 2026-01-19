@@ -1,6 +1,7 @@
-﻿using Assets._Project.Develop.Runtime.Infrastructure;
+﻿using Assets._Project.Develop.Runtime.Gameplay.Features;
+using Assets._Project.Develop.Runtime.Infrastructure;
 using Assets._Project.Develop.Runtime.Infrastructure.DI;
-using Assets._Project.Develop.Runtime.Utilities.CoroutinesManager;
+using Assets._Project.Develop.Runtime.Utilities.ConfigsManagment;
 using Assets._Project.Develop.Runtime.Utilities.SceneManagment;
 using System;
 using System.Collections;
@@ -13,6 +14,8 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Infrastructure
         private DIContainer _container;
 
         private GameplayInputArgs _inputArgs;
+
+        private GameplayCycle _gameplayCycle;
 
         public override void ProcessRegistrations(DIContainer container, IInputSceneArgs sceneArgs = null)
         {
@@ -28,26 +31,39 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Infrastructure
 
         public override IEnumerator Initialize()
         {
-            Debug.Log($"Starting level {_inputArgs.LevelNumber}");
+            Debug.Log($"Starting level with {_inputArgs.Type.ToString().ToLower()}");
 
-            Debug.Log("Initialization gameplay scene");
+            ConfigsProviderService configsProviderService = _container.Resolve<ConfigsProviderService>();
 
-            yield break;
+            yield return configsProviderService.LoadAsync();
+
+            _gameplayCycle = _container.Resolve<GameplayCycle>();
+
+            _gameplayCycle.GameEnd += OnGameEnded;
         }
 
         public override void Run()
         {
-            Debug.Log("Start gameplay scene");
+            _gameplayCycle.Start();
         }
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                SceneSwitcherService sceneSwitcherService = _container.Resolve<SceneSwitcherService>();
-                ICoroutinesPerformer coroutinesPerformer = _container.Resolve<ICoroutinesPerformer>();
-                coroutinesPerformer.StartPerform(sceneSwitcherService.ProcessSwitchTo(Scenes.MainMenu));
-            }
+            _gameplayCycle?.Update();
+        }
+
+        private void OnGameEnded(GameplayEndState endState)
+        {
+            GameplaySceneSwitcher gameplaySceneSwitcher = _container.Resolve<GameplaySceneSwitcher>();
+
+            gameplaySceneSwitcher.SwitchBy(endState, _inputArgs);
+        }
+
+        private void OnDestroy()
+        {
+            _gameplayCycle.GameEnd -= OnGameEnded;
+
+            _gameplayCycle.Dispose();
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using Assets._Project.Develop.Runtime.Infrastructure.DI;
-using UnityEngine;
 
 namespace Assets._Project.Develop.Runtime.Meta.Infrastructure
 {
@@ -7,7 +6,10 @@ namespace Assets._Project.Develop.Runtime.Meta.Infrastructure
     {
         public static void Process(DIContainer container)
         {
-            Debug.Log("Registrations process on main menu scene");
+            container.RegisterAsSingle(CreateGameModeChooseService);
         }
+
+        private static GameModeChooseService CreateGameModeChooseService(DIContainer c)
+            => new GameModeChooseService();
     }
 }

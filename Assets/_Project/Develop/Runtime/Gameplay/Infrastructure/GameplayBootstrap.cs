@@ -2,7 +2,6 @@
 using Assets._Project.Develop.Runtime.Infrastructure;
 using Assets._Project.Develop.Runtime.Infrastructure.DI;
 using Assets._Project.Develop.Runtime.Utilities.ConfigsManagment;
-using Assets._Project.Develop.Runtime.Utilities.CoroutinesManager;
 using Assets._Project.Develop.Runtime.Utilities.SceneManagment;
 using System;
 using System.Collections;
@@ -16,9 +15,7 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Infrastructure
 
         private GameplayInputArgs _inputArgs;
 
-        private GameplayProcess _gameplayProcess;
-
-        private GameplayEndState _gameplayEndState;
+        private GameplayCycle _gameplayCycle;
 
         public override void ProcessRegistrations(DIContainer container, IInputSceneArgs sceneArgs = null)
         {
@@ -40,64 +37,33 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Infrastructure
 
             yield return configsProviderService.LoadAsync();
 
-            _gameplayProcess = new GameplayProcess(_container);
+            _gameplayCycle = _container.Resolve<GameplayCycle>();
 
-            _gameplayProcess.Won += OnWon;
-            _gameplayProcess.Lost += OnLost;
-
-            _gameplayEndState = GameplayEndState.None;
+            _gameplayCycle.GameEnd += OnGameEnded;
         }
 
         public override void Run()
         {
-            _gameplayProcess.Start();
+            _gameplayCycle.Start();
         }
 
         private void Update()
         {
-            if (_gameplayEndState == GameplayEndState.None)
-                _gameplayProcess?.Update();
-            else
-                SwitchScene();
+            _gameplayCycle?.Update();
         }
 
-        private void OnWon()
+        private void OnGameEnded(GameplayEndState endState)
         {
-            Debug.Log("Congratulations! You won");
-            Debug.Log("Press Space to go to menu");
+            GameplaySceneSwitcher gameplaySceneSwitcher = _container.Resolve<GameplaySceneSwitcher>();
 
-            _gameplayEndState = GameplayEndState.Victory;
+            gameplaySceneSwitcher.SwitchBy(endState, _inputArgs);
         }
 
-        private void OnLost()
+        private void OnDestroy()
         {
-            Debug.Log("Oops! You lost");
-            Debug.Log("Press Space to try again");
+            _gameplayCycle.GameEnd -= OnGameEnded;
 
-            _gameplayEndState = GameplayEndState.Defeat;
-        }
-
-        private void SwitchScene()
-        {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                SceneSwitcherService sceneSwitcherService = _container.Resolve<SceneSwitcherService>();
-                ICoroutinesPerformer coroutinesPerformer = _container.Resolve<ICoroutinesPerformer>();
-
-                switch (_gameplayEndState)
-                {
-                    case GameplayEndState.Victory:
-                        coroutinesPerformer.StartPerform(sceneSwitcherService.ProcessSwitchTo(Scenes.MainMenu));
-                        break;
-
-                    case GameplayEndState.Defeat:
-                        coroutinesPerformer.StartPerform(sceneSwitcherService.ProcessSwitchTo(Scenes.Gameplay, _inputArgs));
-                        break;
-
-                    default:
-                        throw new InvalidOperationException("Wrong type of GameplayEndState");
-                }
-            }
+            _gameplayCycle.Dispose();
         }
     }
 }

@@ -13,8 +13,7 @@ namespace Assets._Project.Develop.Runtime.Meta.Infrastructure
     {
         private DIContainer _container;
 
-        private SceneSwitcherService _sceneSwitcherService;
-        private ICoroutinesPerformer _coroutinesPerformer;
+        private GameModeChooseService _gameModeChooseService;
 
         public override void ProcessRegistrations(DIContainer container, IInputSceneArgs sceneArgs = null)
         {
@@ -25,29 +24,34 @@ namespace Assets._Project.Develop.Runtime.Meta.Infrastructure
 
         public override IEnumerator Initialize()
         {
-            Debug.Log("Initialization menu scene");
+            _gameModeChooseService = _container.Resolve<GameModeChooseService>();
 
-            _sceneSwitcherService = _container.Resolve<SceneSwitcherService>();
-            _coroutinesPerformer = _container.Resolve<ICoroutinesPerformer>();
+            _gameModeChooseService.GameModeChosen += OnModeChosen;
 
             yield break;
         }
 
         public override void Run()
         {
-            Debug.Log("Start menu scene");
             Debug.Log("Select gameplay mode: 1 - numbers, 2 - letters");
         }
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Alpha1))
-                _coroutinesPerformer.StartPerform(_sceneSwitcherService
-                    .ProcessSwitchTo(Scenes.Gameplay, new GameplayInputArgs(GameplayTypes.Numbers)));
+            _gameModeChooseService?.Update();
+        }
 
-            if (Input.GetKeyDown(KeyCode.Alpha2))
-                _coroutinesPerformer.StartPerform(_sceneSwitcherService
-                    .ProcessSwitchTo(Scenes.Gameplay, new GameplayInputArgs(GameplayTypes.Letters)));
+        private void OnModeChosen(GameplayTypes type)
+        {
+            SceneSwitcherService sceneSwitcherService = _container.Resolve<SceneSwitcherService>();
+            ICoroutinesPerformer coroutinesPerformer = _container.Resolve<ICoroutinesPerformer>();
+
+            coroutinesPerformer.StartPerform(sceneSwitcherService.ProcessSwitchTo(Scenes.Gameplay, new GameplayInputArgs(type)));
+        }
+
+        private void OnDestroy()
+        {
+            _gameModeChooseService.GameModeChosen -= OnModeChosen;
         }
     }
 }

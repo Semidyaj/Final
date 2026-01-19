@@ -1,5 +1,4 @@
 ﻿using Assets._Project.Develop.Runtime.Gameplay.Configs;
-using Assets._Project.Develop.Runtime.Infrastructure.DI;
 using System;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -10,18 +9,15 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features
     {
         public event Action Won;
         public event Action Lost;
-
-        private DIContainer _container;
-        private SymbolGameplayConfig _config;
+        
+        private readonly SymbolGameplayConfig _config;
 
         private string _guessedString;
         private string _resultString;
 
-        public GameplayProcess(DIContainer container)
+        public GameplayProcess(SymbolGameplayConfig config)
         {
-            _container = container;
-
-            _config = _container.Resolve<SymbolGameplayConfig>();
+            _config = config;
         }
 
         public void Start()
@@ -36,16 +32,10 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features
             _resultString += GetInputKeyboardText();
 
             if (_resultString.Length == _guessedString.Length && IsInputCompareGuessed())
-            {
                 Won?.Invoke();
-                return;
-            }
 
             if (IsInputCompareGuessed() == false)
-            {
                 Lost?.Invoke();
-                return;
-            }
         }
 
         private string GenerateString()

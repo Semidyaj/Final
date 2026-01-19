@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f38fd9d59b652ce4bbb9a8ba260559f4, type: 3}
   m_Name: NumbersGameplayConfig
   m_EditorClassIdentifier: 
-  <SequenceLength>k__BackingField: 0
-  <AllowedSymbols>k__BackingField: 
+  <SequenceLength>k__BackingField: 5
+  <AllowedSymbols>k__BackingField: 0123456789

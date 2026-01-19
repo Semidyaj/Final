@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a04869468b0be14ba29d96d248ea102, type: 3}
   m_Name: LettersGameplayConfig
   m_EditorClassIdentifier: 
-  <SequenceLength>k__BackingField: 0
-  <AllowedSymbols>k__BackingField: 
+  <SequenceLength>k__BackingField: 5
+  <AllowedSymbols>k__BackingField: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz

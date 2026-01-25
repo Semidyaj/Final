@@ -4,8 +4,10 @@ using Assets._Project.Develop.Runtime.Infrastructure;
 using Assets._Project.Develop.Runtime.Infrastructure.DI;
 using Assets._Project.Develop.Runtime.Meta.Features.Wallet;
 using Assets._Project.Develop.Runtime.Utilities.CoroutinesManager;
+using Assets._Project.Develop.Runtime.Utilities.DataManagment;
 using Assets._Project.Develop.Runtime.Utilities.SceneManagment;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets._Project.Develop.Runtime.Meta.Infrastructure
@@ -17,6 +19,8 @@ namespace Assets._Project.Develop.Runtime.Meta.Infrastructure
         private GameModeChooseService _gameModeChooseService;
 
         private WalletService _walletService;
+
+        private PlayerData _playerData;
 
         public override void ProcessRegistrations(DIContainer container, IInputSceneArgs sceneArgs = null)
         {
@@ -32,6 +36,12 @@ namespace Assets._Project.Develop.Runtime.Meta.Infrastructure
             _gameModeChooseService.GameModeChosen += OnModeChosen;
 
             _walletService = _container.Resolve<WalletService>();
+
+            _playerData = new PlayerData();
+            _playerData.WalletData = new Dictionary<CurrencyTypes, int>() 
+            {
+                { CurrencyTypes.Gold, 10 }
+            };
 
             yield break;
         }

@@ -2,7 +2,9 @@
 using Assets._Project.Develop.Runtime.Gameplay.Infrastructure;
 using Assets._Project.Develop.Runtime.Infrastructure;
 using Assets._Project.Develop.Runtime.Infrastructure.DI;
+using Assets._Project.Develop.Runtime.Meta.Features.Wallet;
 using Assets._Project.Develop.Runtime.Utilities.CoroutinesManager;
+using Assets._Project.Develop.Runtime.Utilities.DataManagment.DataProviders;
 using Assets._Project.Develop.Runtime.Utilities.SceneManagment;
 using System.Collections;
 using UnityEngine;
@@ -14,6 +16,11 @@ namespace Assets._Project.Develop.Runtime.Meta.Infrastructure
         private DIContainer _container;
 
         private GameModeChooseService _gameModeChooseService;
+
+        private WalletService _walletService;
+
+        private PlayerDataProvider _playerDataProvider;
+        private ICoroutinesPerformer _coroutinesPerformer;
 
         public override void ProcessRegistrations(DIContainer container, IInputSceneArgs sceneArgs = null)
         {
@@ -28,6 +35,11 @@ namespace Assets._Project.Develop.Runtime.Meta.Infrastructure
 
             _gameModeChooseService.GameModeChosen += OnModeChosen;
 
+            _walletService = _container.Resolve<WalletService>();
+
+            _playerDataProvider = _container.Resolve<PlayerDataProvider>();
+            _coroutinesPerformer = _container.Resolve<ICoroutinesPerformer>();
+
             yield break;
         }
 
@@ -39,6 +51,27 @@ namespace Assets._Project.Develop.Runtime.Meta.Infrastructure
         private void Update()
         {
             _gameModeChooseService?.Update();
+
+            if (Input.GetKeyDown(KeyCode.Alpha3))
+            {
+                _walletService.Add(CurrencyTypes.Gold, 10);
+                Debug.Log("Gold wallet: " + _walletService.GetCurrency(CurrencyTypes.Gold).Value);
+            }
+
+            if (Input.GetKeyDown(KeyCode.Alpha4))
+            {
+                if (_walletService.Enough(CurrencyTypes.Gold, 10))
+                {
+                    _walletService.Spend(CurrencyTypes.Gold, 10);
+                    Debug.Log("Gold wallet: " + _walletService.GetCurrency(CurrencyTypes.Gold).Value);
+                }
+            }
+
+            if (Input.GetKeyDown(KeyCode.S))
+            {
+                _coroutinesPerformer.StartPerform(_playerDataProvider.Save());
+                Debug.Log("Data saved");
+            }
         }
 
         private void OnModeChosen(GameplayTypes type)

@@ -1,11 +1,14 @@
 ﻿using System;
+using static Assets._Project.Develop.Runtime.Infrastructure.DI.DIContainer;
 
 namespace Assets._Project.Develop.Runtime.Infrastructure.DI
 {
-    public class Registration
+    public class Registration : IRegistrationOptions
     {
         private Func<DIContainer, object> _creator;
         private object _cachedInstance;
+
+        public bool IsNonLazy { get; private set; }
 
         public Registration(Func<DIContainer, object> creator) => _creator = creator;
 
@@ -21,5 +24,7 @@ namespace Assets._Project.Develop.Runtime.Infrastructure.DI
 
             return _cachedInstance;
         }
+
+        public void NonLazy() => IsNonLazy = true;
     }
 }

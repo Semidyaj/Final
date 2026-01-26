@@ -9,8 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6a04869468b0be14ba29d96d248ea102, type: 3}
-  m_Name: LettersGameplayConfig
+  m_Script: {fileID: 11500000, guid: 19dcf552848ab7f44a0525bd804082ea, type: 3}
+  m_Name: StartWalletConfig
   m_EditorClassIdentifier: 
-  <SequenceLength>k__BackingField: 5
-  <AllowedSymbols>k__BackingField: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+  _values: []

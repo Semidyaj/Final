@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Assets._Project.Develop.Runtime.Gameplay.Configs
+namespace Assets._Project.Develop.Runtime.Configs.Gameplay
 {
     public abstract class SymbolGameplayConfig : ScriptableObject
     {

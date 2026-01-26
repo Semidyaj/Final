@@ -1,4 +1,5 @@
-using Assets._Project.Develop.Runtime.Gameplay.Configs;
+using Assets._Project.Develop.Runtime.Configs.Gameplay;
+using Assets._Project.Develop.Runtime.Configs.Meta.Wallet;
 using Assets._Project.Develop.Runtime.Utilities.AssetsManagment;
 using System;
 using System.Collections;
@@ -13,8 +14,9 @@ namespace Assets._Project.Develop.Runtime.Utilities.ConfigsManagment
 
         private readonly Dictionary<Type, string> _configResourcesPaths = new()
         {
-            {typeof(NumbersGameplayConfig), "Configs/NumbersGameplayConfig" },
-            {typeof(LettersGameplayConfig), "Configs/LettersGameplayConfig" }
+            {typeof(NumbersGameplayConfig), "Configs/Gameplay/NumbersGameplayConfig" },
+            {typeof(LettersGameplayConfig), "Configs/Gameplay/LettersGameplayConfig" },
+            {typeof(StartWalletConfig), "Configs/Meta/Wallet/StartWalletConfig" },
         };
 
         public ResourcesConfigLoader(ResourcesAssetsLoader resources)

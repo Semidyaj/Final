@@ -1,5 +1,5 @@
 ﻿using Assets._Project.Develop.Runtime.Gameplay.Features.RewardsService;
-using Assets._Project.Develop.Runtime.Gameplay.Features.StatisticsService;
+using Assets._Project.Develop.Runtime.Meta.Features.StatisticsService;
 using System;
 
 namespace Assets._Project.Develop.Runtime.Gameplay.Features.ResultHandler
@@ -20,8 +20,21 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.ResultHandler
 
         public void Apply(GameplayEndState state)
         {
-            _rewardService.Apply(state);
-            _statisticsService.Apply(state);
+            switch (state)
+            {
+                case GameplayEndState.Victory:
+                    _statisticsService.AddVictory();
+                    _rewardService.ApplyVictoryReward();
+                    break;
+
+                case GameplayEndState.Defeat:
+                    _statisticsService.AddDefeat();
+                    _rewardService.ApplyDefeatFee();
+                    break;
+
+                default:
+                    throw new InvalidOperationException($"Wrong end state type {nameof(state)}");
+            }
         }
     }
 }

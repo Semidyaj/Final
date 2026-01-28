@@ -2,8 +2,8 @@
 using Assets._Project.Develop.Runtime.Gameplay.Features;
 using Assets._Project.Develop.Runtime.Gameplay.Features.ResultHandler;
 using Assets._Project.Develop.Runtime.Gameplay.Features.RewardsService;
-using Assets._Project.Develop.Runtime.Gameplay.Features.StatisticsService;
 using Assets._Project.Develop.Runtime.Infrastructure.DI;
+using Assets._Project.Develop.Runtime.Meta.Features.StatisticsService;
 using Assets._Project.Develop.Runtime.Utilities.ConfigsManagment;
 using Assets._Project.Develop.Runtime.Utilities.CoroutinesManager;
 using Assets._Project.Develop.Runtime.Utilities.SceneManagment;
@@ -23,7 +23,7 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Infrastructure
 
             container.RegisterAsSingle(CreateGameplaySceneSwitcher);
 
-            container.RegisterAsSingle(CreateGameplayResultHandler);
+            container.RegisterAsSingle(CreateGameplayResultHandler).NonLazy();
         }
 
         private static GameplayResultHandler CreateGameplayResultHandler(DIContainer c)

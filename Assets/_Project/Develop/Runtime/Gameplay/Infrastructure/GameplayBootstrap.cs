@@ -2,8 +2,9 @@
 using Assets._Project.Develop.Runtime.Gameplay.Features.ResultHandler;
 using Assets._Project.Develop.Runtime.Infrastructure;
 using Assets._Project.Develop.Runtime.Infrastructure.DI;
-using Assets._Project.Develop.Runtime.Meta.Features.Wallet;
 using Assets._Project.Develop.Runtime.Utilities.ConfigsManagment;
+using Assets._Project.Develop.Runtime.Utilities.CoroutinesManager;
+using Assets._Project.Develop.Runtime.Utilities.DataManagment.DataProviders;
 using Assets._Project.Develop.Runtime.Utilities.SceneManagment;
 using System;
 using System.Collections;
@@ -59,12 +60,11 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Infrastructure
             GameplayResultHandler gameplayResultHandler = _container.Resolve<GameplayResultHandler>();
             gameplayResultHandler.Apply(endState);
 
-            int goldBalance = _container.Resolve<WalletService>().GetCurrency(CurrencyTypes.Gold).Value;
-
-            Debug.Log($"Wins: {gameplayResultHandler.Wins}, defeats: {gameplayResultHandler.Defeats}, gold - {goldBalance}");
+            PlayerDataProvider playerDataProvider = _container.Resolve<PlayerDataProvider>();
+            ICoroutinesPerformer coroutinesPerformer = _container.Resolve<ICoroutinesPerformer>();
+            coroutinesPerformer.StartPerform(playerDataProvider.Save());
 
             GameplaySceneSwitcher gameplaySceneSwitcher = _container.Resolve<GameplaySceneSwitcher>();
-
             gameplaySceneSwitcher.SwitchBy(endState, _inputArgs);
         }
 

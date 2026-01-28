@@ -1,7 +1,8 @@
 ﻿using Assets._Project.Develop.Runtime.Configs.Meta.Economy;
+using Assets._Project.Develop.Runtime.Gameplay.Features.ResultHandler;
 using Assets._Project.Develop.Runtime.Gameplay.Features.RewardsService;
-using Assets._Project.Develop.Runtime.Gameplay.Features.StatisticsService;
 using Assets._Project.Develop.Runtime.Infrastructure.DI;
+using Assets._Project.Develop.Runtime.Meta.Features.StatisticsService;
 using Assets._Project.Develop.Runtime.Meta.Features.Wallet;
 using Assets._Project.Develop.Runtime.Utilities.AssetsManagment;
 using Assets._Project.Develop.Runtime.Utilities.ConfigsManagment;
@@ -47,7 +48,7 @@ namespace Assets._Project.Develop.Runtime.Infrastructure.EntryPoint
 
             container.RegisterAsSingle(CreateGameplayRewardsService);
 
-            container.RegisterAsSingle(CreateGameplayStatisticsService);
+            container.RegisterAsSingle(CreateGameplayStatisticsService).NonLazy();
         }
 
         private static GameplayStatisticsService CreateGameplayStatisticsService(DIContainer c)

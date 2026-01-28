@@ -1,8 +1,7 @@
 ﻿using Assets._Project.Develop.Runtime.Utilities.DataManagment;
 using Assets._Project.Develop.Runtime.Utilities.DataManagment.DataProviders;
-using System;
 
-namespace Assets._Project.Develop.Runtime.Gameplay.Features.StatisticsService
+namespace Assets._Project.Develop.Runtime.Meta.Features.StatisticsService
 {
     public class GameplayStatisticsService : IDataReader<PlayerData>, IDataWriter<PlayerData>
     {
@@ -18,14 +17,13 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.StatisticsService
         public int Wins => _winsCount;
         public int Defeats => _defeatsCount;
 
-        public void Apply(GameplayEndState endState)
+        public void AddVictory() => _winsCount++;
+        public void AddDefeat() => _defeatsCount++;
+
+        public void Reset()
         {
-            if (endState == GameplayEndState.Victory)
-                _winsCount++;
-            else if (endState == GameplayEndState.Defeat)
-                _defeatsCount++;
-            else
-                throw new InvalidOperationException("Wrong end state " + nameof(endState));
+            _winsCount = 0;
+            _defeatsCount = 0;
         }
 
         public void ReadFrom(PlayerData data)

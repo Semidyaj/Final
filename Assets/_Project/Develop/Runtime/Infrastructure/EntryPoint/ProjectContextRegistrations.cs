@@ -52,7 +52,7 @@ namespace Assets._Project.Develop.Runtime.Infrastructure.EntryPoint
         }
 
         private static GameplayStatisticsService CreateGameplayStatisticsService(DIContainer c)
-            => new GameplayStatisticsService(c.Resolve<PlayerDataProvider>());
+            => new GameplayStatisticsService(c.Resolve<PlayerDataProvider>(), c.Resolve<ICoroutinesPerformer>());
 
         private static GameplayRewardsService CreateGameplayRewardsService(DIContainer c)
             => new GameplayRewardsService(c.Resolve<WalletService>(), c.Resolve<GameplayEconomyConfig>());

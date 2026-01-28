@@ -1,15 +1,22 @@
-﻿using Assets._Project.Develop.Runtime.Utilities.DataManagment;
+﻿using Assets._Project.Develop.Runtime.Utilities.CoroutinesManager;
+using Assets._Project.Develop.Runtime.Utilities.DataManagment;
 using Assets._Project.Develop.Runtime.Utilities.DataManagment.DataProviders;
 
 namespace Assets._Project.Develop.Runtime.Meta.Features.StatisticsService
 {
     public class GameplayStatisticsService : IDataReader<PlayerData>, IDataWriter<PlayerData>
     {
+        private PlayerDataProvider _playerDataProvider;
+        private ICoroutinesPerformer _coroutinesPerformer;
+
         private int _winsCount;
         private int _defeatsCount;
 
-        public GameplayStatisticsService(PlayerDataProvider playerDataProvider)
+        public GameplayStatisticsService(PlayerDataProvider playerDataProvider, ICoroutinesPerformer coroutinesPerformer)
         {
+            _playerDataProvider = playerDataProvider;
+            _coroutinesPerformer = coroutinesPerformer;
+
             playerDataProvider.RegisterWriter(this);
             playerDataProvider.RegisterReader(this);
         }
@@ -24,6 +31,8 @@ namespace Assets._Project.Develop.Runtime.Meta.Features.StatisticsService
         {
             _winsCount = 0;
             _defeatsCount = 0;
+
+            _coroutinesPerformer.StartPerform(_playerDataProvider.Save());
         }
 
         public void ReadFrom(PlayerData data)

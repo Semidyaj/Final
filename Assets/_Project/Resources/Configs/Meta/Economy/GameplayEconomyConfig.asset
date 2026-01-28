@@ -9,8 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f38fd9d59b652ce4bbb9a8ba260559f4, type: 3}
-  m_Name: NumbersGameplayConfig
+  m_Script: {fileID: 11500000, guid: 4461c24ff55d3b6418116d647baa6f61, type: 3}
+  m_Name: GameplayEconomyConfig
   m_EditorClassIdentifier: 
-  <SequenceLength>k__BackingField: 5
-  <AllowedSymbols>k__BackingField: 0123456789
+  <StatsResetPrice>k__BackingField: 50
+  <VictoryReward>k__BackingField: 10
+  <DefeatFee>k__BackingField: 5

@@ -52,21 +52,6 @@ namespace Assets._Project.Develop.Runtime.Meta.Infrastructure
         {
             _gameModeChooseService?.Update();
 
-            if (Input.GetKeyDown(KeyCode.Alpha3))
-            {
-                _walletService.Add(CurrencyTypes.Gold, 10);
-                Debug.Log("Gold wallet: " + _walletService.GetCurrency(CurrencyTypes.Gold).Value);
-            }
-
-            if (Input.GetKeyDown(KeyCode.Alpha4))
-            {
-                if (_walletService.Enough(CurrencyTypes.Gold, 10))
-                {
-                    _walletService.Spend(CurrencyTypes.Gold, 10);
-                    Debug.Log("Gold wallet: " + _walletService.GetCurrency(CurrencyTypes.Gold).Value);
-                }
-            }
-
             if (Input.GetKeyDown(KeyCode.S))
             {
                 _coroutinesPerformer.StartPerform(_playerDataProvider.Save());

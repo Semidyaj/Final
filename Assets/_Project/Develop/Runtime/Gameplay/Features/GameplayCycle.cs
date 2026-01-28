@@ -7,29 +7,29 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features
     {
         public event Action<GameplayEndState> GameEnd;
 
-        private GameplayProcess _gameplayProcess;
+        private GameMode _gameMode;
 
         private GameplayEndState _endState;
 
-        public GameplayCycle(GameplayProcess gameplayProcess)
+        public GameplayCycle(GameMode gameplayProcess)
         {
-            _gameplayProcess = gameplayProcess;
+            _gameMode = gameplayProcess;
         }
 
         public void Start()
         {
-            _gameplayProcess.Won += OnWon;
-            _gameplayProcess.Lost += OnLost;
+            _gameMode.Won += OnWon;
+            _gameMode.Lost += OnLost;
 
             _endState = GameplayEndState.None;
 
-            _gameplayProcess.Start();
+            _gameMode.Start();
         }
 
         public void Update()
         {
             if (_endState == GameplayEndState.None)
-                _gameplayProcess?.Update();
+                _gameMode?.Update();
 
             if (_endState != GameplayEndState.None)
                 OnGameEnded();
@@ -59,8 +59,8 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features
 
         public void Dispose()
         {
-            _gameplayProcess.Won -= OnWon;
-            _gameplayProcess.Lost -= OnLost;
+            _gameMode.Won -= OnWon;
+            _gameMode.Lost -= OnLost;
         }
     }
 }

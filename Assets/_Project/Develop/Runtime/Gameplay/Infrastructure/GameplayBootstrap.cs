@@ -1,6 +1,8 @@
 ﻿using Assets._Project.Develop.Runtime.Gameplay.Features;
+using Assets._Project.Develop.Runtime.Gameplay.Features.ResultHandler;
 using Assets._Project.Develop.Runtime.Infrastructure;
 using Assets._Project.Develop.Runtime.Infrastructure.DI;
+using Assets._Project.Develop.Runtime.Meta.Features.Wallet;
 using Assets._Project.Develop.Runtime.Utilities.ConfigsManagment;
 using Assets._Project.Develop.Runtime.Utilities.SceneManagment;
 using System;
@@ -54,6 +56,13 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Infrastructure
 
         private void OnGameEnded(GameplayEndState endState)
         {
+            GameplayResultHandler gameplayResultHandler = _container.Resolve<GameplayResultHandler>();
+            gameplayResultHandler.Apply(endState);
+
+            int goldBalance = _container.Resolve<WalletService>().GetCurrency(CurrencyTypes.Gold).Value;
+
+            Debug.Log($"Wins: {gameplayResultHandler.Wins}, defeats: {gameplayResultHandler.Defeats}, gold - {goldBalance}");
+
             GameplaySceneSwitcher gameplaySceneSwitcher = _container.Resolve<GameplaySceneSwitcher>();
 
             gameplaySceneSwitcher.SwitchBy(endState, _inputArgs);
@@ -62,7 +71,6 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Infrastructure
         private void OnDestroy()
         {
             _gameplayCycle.GameEnd -= OnGameEnded;
-
             _gameplayCycle.Dispose();
         }
     }

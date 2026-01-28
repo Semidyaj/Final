@@ -2,9 +2,8 @@
 using Assets._Project.Develop.Runtime.Gameplay.Infrastructure;
 using Assets._Project.Develop.Runtime.Infrastructure;
 using Assets._Project.Develop.Runtime.Infrastructure.DI;
-using Assets._Project.Develop.Runtime.Meta.Features.Wallet;
+using Assets._Project.Develop.Runtime.Meta.Features.StatisticsService;
 using Assets._Project.Develop.Runtime.Utilities.CoroutinesManager;
-using Assets._Project.Develop.Runtime.Utilities.DataManagment.DataProviders;
 using Assets._Project.Develop.Runtime.Utilities.SceneManagment;
 using System.Collections;
 using UnityEngine;
@@ -17,10 +16,9 @@ namespace Assets._Project.Develop.Runtime.Meta.Infrastructure
 
         private GameModeChooseService _gameModeChooseService;
 
-        private WalletService _walletService;
+        private StatisticsView _statisticsView;
 
-        private PlayerDataProvider _playerDataProvider;
-        private ICoroutinesPerformer _coroutinesPerformer;
+        private ResetStatistics _resetStatistics;
 
         public override void ProcessRegistrations(DIContainer container, IInputSceneArgs sceneArgs = null)
         {
@@ -35,10 +33,9 @@ namespace Assets._Project.Develop.Runtime.Meta.Infrastructure
 
             _gameModeChooseService.GameModeChosen += OnModeChosen;
 
-            _walletService = _container.Resolve<WalletService>();
+            _statisticsView = _container.Resolve<StatisticsView>();
 
-            _playerDataProvider = _container.Resolve<PlayerDataProvider>();
-            _coroutinesPerformer = _container.Resolve<ICoroutinesPerformer>();
+            _resetStatistics = _container.Resolve<ResetStatistics>();
 
             yield break;
         }
@@ -52,26 +49,9 @@ namespace Assets._Project.Develop.Runtime.Meta.Infrastructure
         {
             _gameModeChooseService?.Update();
 
-            if (Input.GetKeyDown(KeyCode.Alpha3))
-            {
-                _walletService.Add(CurrencyTypes.Gold, 10);
-                Debug.Log("Gold wallet: " + _walletService.GetCurrency(CurrencyTypes.Gold).Value);
-            }
+            _resetStatistics?.Update();
 
-            if (Input.GetKeyDown(KeyCode.Alpha4))
-            {
-                if (_walletService.Enough(CurrencyTypes.Gold, 10))
-                {
-                    _walletService.Spend(CurrencyTypes.Gold, 10);
-                    Debug.Log("Gold wallet: " + _walletService.GetCurrency(CurrencyTypes.Gold).Value);
-                }
-            }
-
-            if (Input.GetKeyDown(KeyCode.S))
-            {
-                _coroutinesPerformer.StartPerform(_playerDataProvider.Save());
-                Debug.Log("Data saved");
-            }
+            _statisticsView?.Update();
         }
 
         private void OnModeChosen(GameplayTypes type)

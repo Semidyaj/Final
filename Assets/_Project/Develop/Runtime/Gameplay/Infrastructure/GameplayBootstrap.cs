@@ -1,7 +1,10 @@
 ﻿using Assets._Project.Develop.Runtime.Gameplay.Features;
+using Assets._Project.Develop.Runtime.Gameplay.Features.ResultHandler;
 using Assets._Project.Develop.Runtime.Infrastructure;
 using Assets._Project.Develop.Runtime.Infrastructure.DI;
 using Assets._Project.Develop.Runtime.Utilities.ConfigsManagment;
+using Assets._Project.Develop.Runtime.Utilities.CoroutinesManager;
+using Assets._Project.Develop.Runtime.Utilities.DataManagment.DataProviders;
 using Assets._Project.Develop.Runtime.Utilities.SceneManagment;
 using System;
 using System.Collections;
@@ -54,15 +57,20 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Infrastructure
 
         private void OnGameEnded(GameplayEndState endState)
         {
-            GameplaySceneSwitcher gameplaySceneSwitcher = _container.Resolve<GameplaySceneSwitcher>();
+            GameplayResultHandler gameplayResultHandler = _container.Resolve<GameplayResultHandler>();
+            gameplayResultHandler.Apply(endState);
 
+            PlayerDataProvider playerDataProvider = _container.Resolve<PlayerDataProvider>();
+            ICoroutinesPerformer coroutinesPerformer = _container.Resolve<ICoroutinesPerformer>();
+            coroutinesPerformer.StartPerform(playerDataProvider.Save());
+
+            GameplaySceneSwitcher gameplaySceneSwitcher = _container.Resolve<GameplaySceneSwitcher>();
             gameplaySceneSwitcher.SwitchBy(endState, _inputArgs);
         }
 
         private void OnDestroy()
         {
             _gameplayCycle.GameEnd -= OnGameEnded;
-
             _gameplayCycle.Dispose();
         }
     }

@@ -5,19 +5,24 @@ using Random = UnityEngine.Random;
 
 namespace Assets._Project.Develop.Runtime.Gameplay.Features
 {
-    public class GameplayProcess
+    public class GameMode
     {
         public event Action Won;
         public event Action Lost;
         
         private readonly SymbolGameplayConfig _config;
 
+        private InputHandler _inputHandler;
+        private SequenceComparer _sequenceComparer;
+
         private string _guessedString;
         private string _resultString;
 
-        public GameplayProcess(SymbolGameplayConfig config)
+        public GameMode(SymbolGameplayConfig config, InputHandler inputHandler, SequenceComparer sequenceComparer)
         {
             _config = config;
+            _inputHandler = inputHandler;
+            _sequenceComparer = sequenceComparer;
         }
 
         public void Start()
@@ -29,12 +34,12 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features
 
         public void Update()
         {
-            _resultString += GetInputKeyboardText();
+            _resultString += _inputHandler.GetInputKeyboardText();
 
-            if (_resultString.Length == _guessedString.Length && IsInputCompareGuessed())
+            if (_resultString.Length == _guessedString.Length && _sequenceComparer.IsInputCompareGuessed(_resultString, _guessedString))
                 Won?.Invoke();
 
-            if (IsInputCompareGuessed() == false)
+            if (_sequenceComparer.IsInputCompareGuessed(_resultString, _guessedString) == false)
                 Lost?.Invoke();
         }
 
@@ -46,25 +51,6 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features
                 result += _config.AllowedSymbols[Random.Range(0, _config.AllowedSymbols.Length)];
 
             return result;
-        }
-
-        private string GetInputKeyboardText()
-        {
-            string resultForFrame = "";
-
-            foreach (char enteredSymbol in Input.inputString)
-                resultForFrame += enteredSymbol;
-
-            return resultForFrame;
-        }
-
-        private bool IsInputCompareGuessed()
-        {
-            for (int i = 0; i < _resultString.Length; i++)
-                if (_resultString[i] != _guessedString[i])
-                    return false;
-
-            return true;
         }
     }
 }

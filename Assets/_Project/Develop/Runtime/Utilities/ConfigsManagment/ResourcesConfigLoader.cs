@@ -1,4 +1,5 @@
 using Assets._Project.Develop.Runtime.Configs.Gameplay;
+using Assets._Project.Develop.Runtime.Configs.Gameplay.Levels;
 using Assets._Project.Develop.Runtime.Configs.Meta.Economy;
 using Assets._Project.Develop.Runtime.Configs.Meta.Wallet;
 using Assets._Project.Develop.Runtime.Utilities.AssetsManagment;
@@ -20,6 +21,7 @@ namespace Assets._Project.Develop.Runtime.Utilities.ConfigsManagment
             {typeof(StartWalletConfig), "Configs/Meta/Wallet/StartWalletConfig" },
             {typeof(GameplayEconomyConfig), "Configs/Meta/Economy/GameplayEconomyConfig" },
             {typeof(CurrencyIconsConfig), "Configs/Meta/Wallet/CurrencyIconsConfig" },
+            {typeof(LevelsListConfig), "Configs/Gameplay/Levels/LevelsListConfig" },
         };
 
         public ResourcesConfigLoader(ResourcesAssetsLoader resources)

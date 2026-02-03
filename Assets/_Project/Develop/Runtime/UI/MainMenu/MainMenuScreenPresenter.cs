@@ -1,6 +1,5 @@
 ﻿using Assets._Project.Develop.Runtime.UI.Core;
 using Assets._Project.Develop.Runtime.UI.Wallet;
-using System;
 using System.Collections.Generic;
 
 namespace Assets._Project.Develop.Runtime.UI.MainMenu
@@ -27,7 +26,7 @@ namespace Assets._Project.Develop.Runtime.UI.MainMenu
 
         public void Initialize()
         {
-            _screen.OpenTestPopupButtonClicked += OnOpenTestPopupButtonClicked;
+            _screen.OpenLevelsMenuButtonClicked += OnOpenLevelsMenuButtonClicked;
 
             CreateWallet();
 
@@ -37,7 +36,7 @@ namespace Assets._Project.Develop.Runtime.UI.MainMenu
 
         public void Dispose()
         {
-            _screen.OpenTestPopupButtonClicked -= OnOpenTestPopupButtonClicked;
+            _screen.OpenLevelsMenuButtonClicked -= OnOpenLevelsMenuButtonClicked;
 
             foreach (IPresenter presenter in _childPresenters)
                 presenter.Dispose();
@@ -51,6 +50,6 @@ namespace Assets._Project.Develop.Runtime.UI.MainMenu
             _childPresenters.Add(walletPresenter);
         }
 
-        private void OnOpenTestPopupButtonClicked() => _popupService.OpenTestPopup();
+        private void OnOpenLevelsMenuButtonClicked() => _popupService.OpenLevelsMenuPopup();
     }
 }

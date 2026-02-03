@@ -1,4 +1,8 @@
-﻿using System;
+﻿using Assets._Project.Develop.Runtime.Utilities.CoroutinesManager;
+using DG.Tweening;
+using System;
+using System.Collections;
+using UnityEngine;
 
 namespace Assets._Project.Develop.Runtime.UI.Core
 {
@@ -6,36 +10,40 @@ namespace Assets._Project.Develop.Runtime.UI.Core
     {
         public event Action<PopupPresenterBase> CloseRequest;
 
+        private readonly ICoroutinesPerformer _coroutinePerformer;
+
+        private Coroutine _process;
+
+        protected PopupPresenterBase(ICoroutinesPerformer performer)
+        {
+            _coroutinePerformer = performer;
+        }
+
         protected abstract PopupViewBase PopupView { get; }
 
         public virtual void Initialize()
         {
-
         }
 
         public virtual void Dispose()
         {
+            KillProcess();
+
             PopupView.CloseRequest -= OnCloseRequest;
         }
 
         public void Show()
         {
-            OnPreShow();
+            KillProcess();
 
-            PopupView.Show();
-
-            OnPostShow();
+            _process = _coroutinePerformer.StartPerform(ProcessShow());
         }
 
         public void Hide(Action callback = null)
         {
-            OnPreHide();
+            KillProcess();
 
-            PopupView?.Hide();
-
-            OnPostHide();
-
-            callback?.Invoke();
+            _process = _coroutinePerformer.StartPerform(ProcessHide(callback));
         }
 
         protected virtual void OnPreShow()
@@ -53,5 +61,31 @@ namespace Assets._Project.Develop.Runtime.UI.Core
         protected virtual void OnPostHide() { }
 
         protected void OnCloseRequest() => CloseRequest?.Invoke(this);
+
+        private IEnumerator ProcessShow()
+        {
+            OnPreShow();
+
+            yield return PopupView.Show().WaitForCompletion();
+
+            OnPostShow();
+        }
+
+        private IEnumerator ProcessHide(Action callback)
+        {
+            OnPreHide();
+
+            yield return PopupView?.Hide().WaitForCompletion();
+
+            OnPostHide();
+
+            callback?.Invoke();
+        }
+
+        private void KillProcess()
+        {
+            if(_process != null)
+                _coroutinePerformer.StopPerform(_process);
+        }
     }
 }

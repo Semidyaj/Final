@@ -1,9 +1,11 @@
 ﻿using Assets._Project.Develop.Runtime.Configs.Meta.Economy;
-using Assets._Project.Develop.Runtime.Gameplay.Features.ResultHandler;
 using Assets._Project.Develop.Runtime.Gameplay.Features.RewardsService;
 using Assets._Project.Develop.Runtime.Infrastructure.DI;
+using Assets._Project.Develop.Runtime.Meta.Features.LevelsProgression;
 using Assets._Project.Develop.Runtime.Meta.Features.StatisticsService;
 using Assets._Project.Develop.Runtime.Meta.Features.Wallet;
+using Assets._Project.Develop.Runtime.UI;
+using Assets._Project.Develop.Runtime.UI.Core;
 using Assets._Project.Develop.Runtime.Utilities.AssetsManagment;
 using Assets._Project.Develop.Runtime.Utilities.ConfigsManagment;
 using Assets._Project.Develop.Runtime.Utilities.CoroutinesManager;
@@ -49,7 +51,22 @@ namespace Assets._Project.Develop.Runtime.Infrastructure.EntryPoint
             container.RegisterAsSingle(CreateGameplayRewardsService);
 
             container.RegisterAsSingle(CreateGameplayStatisticsService).NonLazy();
+
+            container.RegisterAsSingle(CreateProjectPresentersFactory);
+
+            container.RegisterAsSingle(CreateViewsFactory);
+
+            container.RegisterAsSingle(CreateLevelsProgressionService).NonLazy();
         }
+
+        private static LevelsProgressionService CreateLevelsProgressionService(DIContainer c)
+            => new LevelsProgressionService(c.Resolve<PlayerDataProvider>());
+
+        private static ViewsFactory CreateViewsFactory(DIContainer c)
+            => new ViewsFactory(c.Resolve<ResourcesAssetsLoader>());
+
+        private static ProjectPresentersFactory CreateProjectPresentersFactory(DIContainer c)
+            => new ProjectPresentersFactory(c);
 
         private static GameplayStatisticsService CreateGameplayStatisticsService(DIContainer c)
             => new GameplayStatisticsService(c.Resolve<PlayerDataProvider>(), c.Resolve<ICoroutinesPerformer>());

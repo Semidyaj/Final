@@ -9,9 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4461c24ff55d3b6418116d647baa6f61, type: 3}
-  m_Name: GameplayEconomyConfig
+  m_Script: {fileID: 11500000, guid: 7bc9b2df1bd09794988830e2408199f2, type: 3}
+  m_Name: CurrencyIconsConfig
   m_EditorClassIdentifier: 
-  <StatsResetPrice>k__BackingField: 30
-  <VictoryReward>k__BackingField: 10
-  <DefeatFee>k__BackingField: 5
+  _configs:
+  - <Type>k__BackingField: 0
+    <Sprite>k__BackingField: {fileID: 10905, guid: 0000000000000000f000000000000000,
+      type: 0}

@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using DG.Tweening;
 
 namespace Assets._Project.Develop.Runtime.UI.Core
 {
@@ -20,7 +21,7 @@ namespace Assets._Project.Develop.Runtime.UI.Core
         {
             OnPreShow();
 
-            _mainGroup.alpha = 1;
+            _mainGroup.DOFade(1, 1);
 
             OnPostShow();
         }

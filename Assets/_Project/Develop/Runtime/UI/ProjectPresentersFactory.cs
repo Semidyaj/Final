@@ -1,11 +1,14 @@
 ﻿using Assets._Project.Develop.Runtime.Configs.Meta.Wallet;
 using Assets._Project.Develop.Runtime.Infrastructure.DI;
 using Assets._Project.Develop.Runtime.Meta.Features.LevelsProgression;
+using Assets._Project.Develop.Runtime.Meta.Features.StatisticsService;
 using Assets._Project.Develop.Runtime.Meta.Features.Wallet;
 using Assets._Project.Develop.Runtime.UI.CommonViews;
 using Assets._Project.Develop.Runtime.UI.Core;
 using Assets._Project.Develop.Runtime.UI.Core.LevelsMenuPopup;
+using Assets._Project.Develop.Runtime.UI.Core.Statistics;
 using Assets._Project.Develop.Runtime.UI.Core.TestPopup;
+using Assets._Project.Develop.Runtime.UI.MainMenu;
 using Assets._Project.Develop.Runtime.UI.Wallet;
 using Assets._Project.Develop.Runtime.Utilities.ConfigsManagment;
 using Assets._Project.Develop.Runtime.Utilities.CoroutinesManager;
@@ -22,6 +25,15 @@ namespace Assets._Project.Develop.Runtime.UI
         {
             _container = container;
         }
+
+        //public StatisticsPresenter CreateStatisticsPresenter(IconTextListView listView)
+        //    => new StatisticsPresenter(_container.Resolve<ProjectPresentersFactory>(), _container.Resolve<ViewsFactory>(), listView);
+
+        //public DefeatStatsPresenter CreateDefeatStatsPresenter(IconTextView view)
+        //    => new DefeatStatsPresenter(view, _container.Resolve<GameplayStatisticsService>(), _container.Resolve<ResetStatistics>());
+
+        //public WinStatsPresenter CreateWinStatsPresenter(IconTextView view)
+        //    => new WinStatsPresenter(view, _container.Resolve<GameplayStatisticsService>(), _container.Resolve<ResetStatistics>());
 
         public LevelsMenuPopupPresenter CreateLevelsMenuPopupPresenter(LevelsMenuPopupView view)
             => new LevelsMenuPopupPresenter(

@@ -3,10 +3,8 @@ using Assets._Project.Develop.Runtime.Infrastructure.DI;
 using Assets._Project.Develop.Runtime.Meta.Features.StatisticsService;
 using Assets._Project.Develop.Runtime.Meta.Features.Wallet;
 using Assets._Project.Develop.Runtime.UI;
-using Assets._Project.Develop.Runtime.UI.CommonViews;
 using Assets._Project.Develop.Runtime.UI.Core;
 using Assets._Project.Develop.Runtime.UI.MainMenu;
-using Assets._Project.Develop.Runtime.UI.Wallet;
 using Assets._Project.Develop.Runtime.Utilities.AssetsManagment;
 using UnityEngine;
 
@@ -17,8 +15,6 @@ namespace Assets._Project.Develop.Runtime.Meta.Infrastructure
         public static void Process(DIContainer container)
         {
             container.RegisterAsSingle(CreateGameModeChooseService);
-
-            container.RegisterAsSingle(CreateStatisticsView);
 
             container.RegisterAsSingle(CreateResetStatistics);
 
@@ -62,9 +58,6 @@ namespace Assets._Project.Develop.Runtime.Meta.Infrastructure
 
         private static ResetStatistics CreateResetStatistics(DIContainer c)
             => new ResetStatistics(c.Resolve<WalletService>(), c.Resolve<GameplayStatisticsService>(), c.Resolve<GameplayEconomyConfig>());
-
-        private static StatisticsView CreateStatisticsView(DIContainer c)
-            => new StatisticsView(c.Resolve<GameplayStatisticsService>(), c.Resolve<WalletService>());
 
         private static GameModeChooseService CreateGameModeChooseService(DIContainer c)
             => new GameModeChooseService();

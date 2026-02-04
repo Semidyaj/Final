@@ -16,8 +16,6 @@ namespace Assets._Project.Develop.Runtime.Meta.Infrastructure
 
         private GameModeChooseService _gameModeChooseService;
 
-        private StatisticsView _statisticsView;
-
         private ResetStatistics _resetStatistics;
 
         public override void ProcessRegistrations(DIContainer container, IInputSceneArgs sceneArgs = null)
@@ -33,8 +31,6 @@ namespace Assets._Project.Develop.Runtime.Meta.Infrastructure
 
             _gameModeChooseService.GameModeChosen += OnModeChosen;
 
-            _statisticsView = _container.Resolve<StatisticsView>();
-
             _resetStatistics = _container.Resolve<ResetStatistics>();
 
             yield break;
@@ -48,10 +44,6 @@ namespace Assets._Project.Develop.Runtime.Meta.Infrastructure
         private void Update()
         {
             _gameModeChooseService?.Update();
-
-            _resetStatistics?.Update();
-
-            _statisticsView?.Update();
         }
 
         private void OnModeChosen(GameplayTypes type)

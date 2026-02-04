@@ -1,11 +1,14 @@
 ﻿using Assets._Project.Develop.Runtime.Configs.Meta.Economy;
 using Assets._Project.Develop.Runtime.Meta.Features.Wallet;
+using System;
 using UnityEngine;
 
 namespace Assets._Project.Develop.Runtime.Meta.Features.StatisticsService
 {
     public class ResetStatistics
     {
+        public event Action Reseted;
+
         private WalletService _walletService;
         private GameplayStatisticsService _statisticsService;
 
@@ -18,12 +21,6 @@ namespace Assets._Project.Develop.Runtime.Meta.Features.StatisticsService
             _economyConfig = economyConfig;
         }
 
-        public void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.R))
-                Reset();
-        }
-
         public void Reset()
         {
             if (_walletService.GetCurrency(CurrencyTypes.Gold).Value >= _economyConfig.StatsResetPrice)
@@ -31,6 +28,8 @@ namespace Assets._Project.Develop.Runtime.Meta.Features.StatisticsService
                 _walletService.Spend(CurrencyTypes.Gold, _economyConfig.StatsResetPrice);
 
                 _statisticsService.Reset();
+
+                Reseted?.Invoke();
 
                 Debug.Log($"Reset successful. Gold - {_walletService.GetCurrency(CurrencyTypes.Gold).Value}" +
                     $", wins - {_statisticsService.Wins}, defeats - {_statisticsService.Defeats}");

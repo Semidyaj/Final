@@ -8,5 +8,7 @@
         public const string LevelTile = nameof(LevelTile);
         public const string LevelsMenuPopup = nameof(LevelsMenuPopup);
         public const string GameplayScreen = nameof(GameplayScreen);
+        public const string WinStatsView = nameof(WinStatsView);
+        public const string DefeatStatsView = nameof(DefeatStatsView);
     }
 }

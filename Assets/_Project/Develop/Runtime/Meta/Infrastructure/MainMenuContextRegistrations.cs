@@ -16,8 +16,6 @@ namespace Assets._Project.Develop.Runtime.Meta.Infrastructure
         {
             container.RegisterAsSingle(CreateGameModeChooseService);
 
-            container.RegisterAsSingle(CreateStatisticsView);
-
             container.RegisterAsSingle(CreateResetStatistics);
 
             container.RegisterAsSingle(CreateMainMenuUIRoot).NonLazy();
@@ -60,9 +58,6 @@ namespace Assets._Project.Develop.Runtime.Meta.Infrastructure
 
         private static ResetStatistics CreateResetStatistics(DIContainer c)
             => new ResetStatistics(c.Resolve<WalletService>(), c.Resolve<GameplayStatisticsService>(), c.Resolve<GameplayEconomyConfig>());
-
-        private static StatisticsView CreateStatisticsView(DIContainer c)
-            => new StatisticsView(c.Resolve<GameplayStatisticsService>(), c.Resolve<WalletService>());
 
         private static GameModeChooseService CreateGameModeChooseService(DIContainer c)
             => new GameModeChooseService();

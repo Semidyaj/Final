@@ -1,4 +1,6 @@
 ﻿using Assets._Project.Develop.Runtime.Configs.Gameplay;
+using Assets._Project.Develop.Runtime.Gameplay.EntitiesCore;
+using Assets._Project.Develop.Runtime.Gameplay.EntitiesCore.Mono;
 using Assets._Project.Develop.Runtime.Gameplay.Features;
 using Assets._Project.Develop.Runtime.Gameplay.Features.ResultHandler;
 using Assets._Project.Develop.Runtime.Gameplay.Features.RewardsService;
@@ -6,7 +8,6 @@ using Assets._Project.Develop.Runtime.Infrastructure.DI;
 using Assets._Project.Develop.Runtime.Meta.Features.StatisticsService;
 using Assets._Project.Develop.Runtime.UI.Core;
 using Assets._Project.Develop.Runtime.UI.Gameplay;
-using Assets._Project.Develop.Runtime.UI.MainMenu;
 using Assets._Project.Develop.Runtime.Utilities.AssetsManagment;
 using Assets._Project.Develop.Runtime.Utilities.ConfigsManagment;
 using Assets._Project.Develop.Runtime.Utilities.CoroutinesManager;
@@ -35,7 +36,22 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Infrastructure
             container.RegisterAsSingle(CreateGameplayPresentersFactory);
 
             container.RegisterAsSingle(CreateGameplayScreenPresenter).NonLazy();
+
+            container.RegisterAsSingle(CreateEntitiesFactory);
+
+            container.RegisterAsSingle(CreateEntitiesLifeContext);
+
+            container.RegisterAsSingle(CreateMonoEntitiesFactory).NonLazy();
         }
+
+        private static MonoEntitiesFactory CreateMonoEntitiesFactory(DIContainer c)
+            => new MonoEntitiesFactory(c.Resolve<ResourcesAssetsLoader>(), c.Resolve<EntitiesLifeContext>());
+
+        private static EntitiesLifeContext CreateEntitiesLifeContext(DIContainer c)
+            => new EntitiesLifeContext();
+
+        private static EntitiesFactory CreateEntitiesFactory(DIContainer c)
+            => new EntitiesFactory(c);
 
         private static GameplayScreenPresenter CreateGameplayScreenPresenter(DIContainer c)
         {

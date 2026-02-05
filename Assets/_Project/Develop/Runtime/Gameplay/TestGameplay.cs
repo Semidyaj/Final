@@ -1,0 +1,38 @@
+﻿using Assets._Project.Develop.Runtime.Gameplay.EntitiesCore;
+using Assets._Project.Develop.Runtime.Gameplay.Features.MovementFeature;
+using Assets._Project.Develop.Runtime.Infrastructure.DI;
+using UnityEngine;
+
+namespace Assets._Project.Develop.Runtime.Gameplay
+{
+    public class TestGameplay : MonoBehaviour
+    {
+        private DIContainer _container;
+        private EntitiesFactory _entitiesFactory;
+
+        private bool _isRunning;
+
+        public void Initialize(DIContainer container)
+        {
+            _container = container;
+
+            _entitiesFactory = _container.Resolve<EntitiesFactory>();
+        }
+
+        public void Run()
+        {
+            Entity entity = _entitiesFactory.CreateTestEntity(Vector3.zero);
+
+            Debug.Log($"Direction: {entity.GetComponent<MoveDirection>().Value.Value.ToString()}");
+            Debug.Log($"Speed: {entity.GetComponent<MoveSpeed>().Value.Value.ToString()}");
+
+            _isRunning = true;
+        }
+
+        private void Update()
+        {
+            if (_isRunning == false)
+                return;
+        }
+    }
+}

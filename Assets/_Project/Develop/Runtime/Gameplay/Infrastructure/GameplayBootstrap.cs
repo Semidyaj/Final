@@ -1,4 +1,5 @@
-﻿using Assets._Project.Develop.Runtime.Gameplay.Features;
+﻿using Assets._Project.Develop.Runtime.Gameplay.EntitiesCore;
+using Assets._Project.Develop.Runtime.Gameplay.Features;
 using Assets._Project.Develop.Runtime.Gameplay.Features.ResultHandler;
 using Assets._Project.Develop.Runtime.Infrastructure;
 using Assets._Project.Develop.Runtime.Infrastructure.DI;
@@ -14,11 +15,15 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Infrastructure
 {
     public class GameplayBootstrap : SceneBootstrap
     {
+        [SerializeField] private TestGameplay _testGameplay;
+
         private DIContainer _container;
 
         private GameplayInputArgs _inputArgs;
 
         private GameplayCycle _gameplayCycle;
+
+        private EntitiesLifeContext _entitiesLifeContext;
 
         public override void ProcessRegistrations(DIContainer container, IInputSceneArgs sceneArgs = null)
         {
@@ -40,38 +45,46 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Infrastructure
 
             yield return configsProviderService.LoadAsync();
 
-            _gameplayCycle = _container.Resolve<GameplayCycle>();
+            //_gameplayCycle = _container.Resolve<GameplayCycle>();
 
-            _gameplayCycle.GameEnd += OnGameEnded;
+            _testGameplay.Initialize(_container);
+
+            _entitiesLifeContext = _container.Resolve<EntitiesLifeContext>();
+
+            //_gameplayCycle.GameEnd += OnGameEnded;
         }
 
         public override void Run()
         {
-            _gameplayCycle.Start();
+            //_gameplayCycle.Start();
+
+            _testGameplay.Run();
         }
 
         private void Update()
         {
-            _gameplayCycle?.Update();
+            //_gameplayCycle?.Update();
+
+            _entitiesLifeContext?.Update(Time.deltaTime);
         }
 
-        private void OnGameEnded(GameplayEndState endState)
-        {
-            GameplayResultHandler gameplayResultHandler = _container.Resolve<GameplayResultHandler>();
-            gameplayResultHandler.Apply(endState);
+        //private void OnGameEnded(GameplayEndState endState)
+        //{
+        //    GameplayResultHandler gameplayResultHandler = _container.Resolve<GameplayResultHandler>();
+        //    gameplayResultHandler.Apply(endState);
 
-            PlayerDataProvider playerDataProvider = _container.Resolve<PlayerDataProvider>();
-            ICoroutinesPerformer coroutinesPerformer = _container.Resolve<ICoroutinesPerformer>();
-            coroutinesPerformer.StartPerform(playerDataProvider.Save());
+        //    PlayerDataProvider playerDataProvider = _container.Resolve<PlayerDataProvider>();
+        //    ICoroutinesPerformer coroutinesPerformer = _container.Resolve<ICoroutinesPerformer>();
+        //    coroutinesPerformer.StartPerform(playerDataProvider.Save());
 
-            GameplaySceneSwitcher gameplaySceneSwitcher = _container.Resolve<GameplaySceneSwitcher>();
-            gameplaySceneSwitcher.SwitchBy(endState, _inputArgs);
-        }
+        //    GameplaySceneSwitcher gameplaySceneSwitcher = _container.Resolve<GameplaySceneSwitcher>();
+        //    gameplaySceneSwitcher.SwitchBy(endState, _inputArgs);
+        //}
 
         private void OnDestroy()
         {
-            _gameplayCycle.GameEnd -= OnGameEnded;
-            _gameplayCycle.Dispose();
+            //_gameplayCycle.GameEnd -= OnGameEnded;
+            //_gameplayCycle.Dispose();
         }
     }
 }

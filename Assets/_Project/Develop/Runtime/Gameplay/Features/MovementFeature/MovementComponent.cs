@@ -14,8 +14,13 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.MovementFeature
         public ReactiveVariable<float> Value;
     }
 
-    public class RigidbodyComponent : IEntityComponent
+    public class RotateDirection : IEntityComponent
     {
-        public Rigidbody Value;
+        public ReactiveVariable<Vector3> Value;
+    }
+
+    public class RotateSpeed : IEntityComponent
+    {
+        public ReactiveVariable<float> Value;
     }
 }

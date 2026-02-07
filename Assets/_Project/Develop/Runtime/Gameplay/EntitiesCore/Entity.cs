@@ -1,10 +1,14 @@
-﻿using Assets._Project.Develop.Runtime.Gameplay.EntitiesCore.Systems;
+﻿using Assets._Project.Develop.Runtime.Gameplay.Common;
+using Assets._Project.Develop.Runtime.Gameplay.EntitiesCore.Systems;
+using Assets._Project.Develop.Runtime.Gameplay.Features.MovementFeature;
+using Assets._Project.Develop.Runtime.Utilities.Reactive;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Assets._Project.Develop.Runtime.Gameplay.EntitiesCore
 {
-    public class Entity : IDisposable
+    public partial class Entity : IDisposable
     {
         private readonly Dictionary<Type, IEntityComponent> _components = new();
 
@@ -35,7 +39,7 @@ namespace Assets._Project.Develop.Runtime.Gameplay.EntitiesCore
 
         public void Dispose()
         {
-            foreach(IDisposableSystem disposable in _disposables)
+            foreach (IDisposableSystem disposable in _disposables)
                 disposable.OnDispose();
 
             _isInit = false;
@@ -66,7 +70,7 @@ namespace Assets._Project.Develop.Runtime.Gameplay.EntitiesCore
 
         public TComponent GetComponent<TComponent>() where TComponent : class, IEntityComponent
         {
-            if(TryGetComponent(out TComponent component) == false)
+            if (TryGetComponent(out TComponent component) == false)
                 throw new ArgumentException($"Entity not exist {typeof(TComponent)}.");
 
             return component;
@@ -79,7 +83,7 @@ namespace Assets._Project.Develop.Runtime.Gameplay.EntitiesCore
 
             _systems.Add(system);
 
-            if(system is IInitializableSystem initializable)
+            if (system is IInitializableSystem initializable)
             {
                 _initializables.Add(initializable);
 
@@ -87,10 +91,10 @@ namespace Assets._Project.Develop.Runtime.Gameplay.EntitiesCore
                     initializable.OnInit(this);
             }
 
-            if(system is IUpdatableSystem updatable)
+            if (system is IUpdatableSystem updatable)
                 _updatables.Add(updatable);
 
-            if(system is IDisposableSystem disposable)
+            if (system is IDisposableSystem disposable)
                 _disposables.Add(disposable);
 
             return this;

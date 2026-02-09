@@ -9,7 +9,8 @@ namespace Assets._Project.Develop.Runtime.Gameplay
         private DIContainer _container;
         private EntitiesFactory _entitiesFactory;
 
-        private Entity _entity;
+        private Entity _entity1;
+        private Entity _entity2;
 
         private bool _isRunning;
 
@@ -22,7 +23,8 @@ namespace Assets._Project.Develop.Runtime.Gameplay
 
         public void Run()
         {
-            _entity = _entitiesFactory.CreateTestEntity(Vector3.zero);
+            _entity1 = _entitiesFactory.CreateTestRigidbodyEntity(new Vector3(-2, 0, 0));
+            _entity2 = _entitiesFactory.CreateTestCharacterControllerEntity(new Vector3(2, 0, 0));
 
             _isRunning = true;
         }
@@ -34,8 +36,11 @@ namespace Assets._Project.Develop.Runtime.Gameplay
 
             Vector3 input = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
 
-            _entity.MoveDirection.Value = input;
-            _entity.RotateDirection.Value = input;
+            _entity1.MoveDirection.Value = input;
+            _entity1.RotateDirection.Value = input;
+
+            _entity2.MoveDirection.Value = input;
+            _entity2.RotateDirection.Value = input;
         }
     }
 }

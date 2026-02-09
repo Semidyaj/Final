@@ -10,8 +10,8 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.MovementFeature
         private ReactiveVariable<Vector3> _moveDirection;
         private ReactiveVariable<float> _moveSpeed;
 
-        private ReactiveVariable<Vector3> _rotateDirection;
-        private ReactiveVariable<float> _rotateSpeed;
+        private ReactiveVariable<Vector3> _rotationDirection;
+        private ReactiveVariable<float> _rotationSpeed;
 
         private CharacterController _characterController;
         private Transform _transform;
@@ -21,8 +21,8 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.MovementFeature
             _moveDirection = entity.MoveDirection;
             _moveSpeed = entity.MoveSpeed;
 
-            _rotateDirection = entity.RotateDirection;
-            _rotateSpeed = entity.RotateSpeed;
+            _rotationDirection = entity.RotationDirection;
+            _rotationSpeed = entity.RotationSpeed;
 
             _characterController = entity.CharacterController;
             _transform = entity.Transform;
@@ -34,9 +34,9 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.MovementFeature
 
             _characterController.Move(velocity * deltaTime);
 
-            Quaternion targetRotation = Quaternion.LookRotation(_rotateDirection.Value.normalized, Vector3.up);
+            Quaternion targetRotation = Quaternion.LookRotation(_rotationDirection.Value.normalized, Vector3.up);
 
-            float step = _rotateSpeed.Value * deltaTime;
+            float step = _rotationSpeed.Value * deltaTime;
 
             _transform.rotation = Quaternion.RotateTowards(_transform.rotation, targetRotation, step);
         }

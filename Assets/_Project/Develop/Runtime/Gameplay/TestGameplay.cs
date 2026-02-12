@@ -9,7 +9,7 @@ namespace Assets._Project.Develop.Runtime.Gameplay
         private DIContainer _container;
         private EntitiesFactory _entitiesFactory;
 
-        private Entity _ghost;
+        private Entity _hero;
 
         private bool _isRunning;
 
@@ -22,7 +22,7 @@ namespace Assets._Project.Develop.Runtime.Gameplay
 
         public void Run()
         {
-            _ghost = _entitiesFactory.CreateGhostEntity(Vector3.zero);
+            _hero = _entitiesFactory.CreateHeroEntity(Vector3.zero);
             _entitiesFactory.CreateGhostEntity(Vector3.zero + Vector3.forward * 5);
 
             _isRunning = true;
@@ -34,12 +34,15 @@ namespace Assets._Project.Develop.Runtime.Gameplay
                 return;
 
             if (Input.GetKeyDown(KeyCode.Space))
-                _ghost.TakeDamageRequest.Invoke(50);
+                _hero.TakeDamageRequest.Invoke(50);
+
+            if (Input.GetKeyDown(KeyCode.R))
+                _hero.StartAttackRequest.Invoke();
 
             Vector3 input = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
 
-            _ghost.MoveDirection.Value = input;
-            _ghost.RotationDirection.Value = input;
+            _hero.MoveDirection.Value = input;
+            _hero.RotationDirection.Value = input;
         }
     }
 }

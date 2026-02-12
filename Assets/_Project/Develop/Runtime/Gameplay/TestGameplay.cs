@@ -23,6 +23,7 @@ namespace Assets._Project.Develop.Runtime.Gameplay
         public void Run()
         {
             _ghost = _entitiesFactory.CreateGhostEntity(Vector3.zero);
+            _entitiesFactory.CreateGhostEntity(Vector3.zero + Vector3.forward * 5);
 
             _isRunning = true;
         }
@@ -33,10 +34,7 @@ namespace Assets._Project.Develop.Runtime.Gameplay
                 return;
 
             if (Input.GetKeyDown(KeyCode.Space))
-            {
-                _ghost.CurrentHealth.Value -= 50;
-                Debug.Log($"Current health: {_ghost.CurrentHealth.Value.ToString()}");
-            }
+                _ghost.TakeDamageRequest.Invoke(50);
 
             Vector3 input = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
 

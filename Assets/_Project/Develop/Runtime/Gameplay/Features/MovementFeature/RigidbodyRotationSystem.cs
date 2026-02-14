@@ -8,8 +8,8 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.MovementFeature
 {
     public class RigidbodyRotationSystem : IUpdatableSystem, IInitializableSystem
     {
-        private ReactiveVariable<Vector3> _rotateDirection;
-        private ReactiveVariable<float> _rotateSpeed;
+        private ReactiveVariable<Vector3> _rotationDirection;
+        private ReactiveVariable<float> _rotationSpeed;
 
         private Rigidbody _rigidbody;
 
@@ -17,12 +17,15 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.MovementFeature
 
         public void OnInit(Entity entity)
         {
-            _rotateDirection = entity.RotationDirection;
-            _rotateSpeed = entity.RotationSpeed;
+            _rotationDirection = entity.RotationDirection;
+            _rotationSpeed = entity.RotationSpeed;
 
             _rigidbody = entity.Rigidbody;
 
             _canRotate = entity.CanRotate;
+
+            if (_rotationDirection.Value != Vector3.zero)
+                _rigidbody.transform.rotation = Quaternion.LookRotation(_rotationDirection.Value.normalized, Vector3.up);
         }
 
         public void OnUpdate(float deltaTime)
@@ -30,12 +33,12 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.MovementFeature
             if (_canRotate.Evaluate() == false)
                 return;
 
-            if (_rotateDirection.Value == Vector3.zero)
+            if (_rotationDirection.Value == Vector3.zero)
                 return;
 
-            Quaternion targetRotation = Quaternion.LookRotation(_rotateDirection.Value.normalized, Vector3.up);
+            Quaternion targetRotation = Quaternion.LookRotation(_rotationDirection.Value.normalized, Vector3.up);
 
-            float step = _rotateSpeed.Value * deltaTime;
+            float step = _rotationSpeed.Value * deltaTime;
 
             _rigidbody.MoveRotation(Quaternion.RotateTowards(_rigidbody.rotation, targetRotation, step));
         }

@@ -9,8 +9,7 @@ namespace Assets._Project.Develop.Runtime.Gameplay
         private DIContainer _container;
         private EntitiesFactory _entitiesFactory;
 
-        private Entity _entity1;
-        private Entity _entity2;
+        private Entity _hero;
 
         private bool _isRunning;
 
@@ -23,8 +22,8 @@ namespace Assets._Project.Develop.Runtime.Gameplay
 
         public void Run()
         {
-            _entity1 = _entitiesFactory.CreateTestRigidbodyEntity(new Vector3(-2, 0, 0));
-            _entity2 = _entitiesFactory.CreateTestCharacterControllerEntity(new Vector3(2, 0, 0));
+            _hero = _entitiesFactory.CreateHeroEntity(Vector3.zero);
+            _entitiesFactory.CreateGhostEntity(Vector3.zero + Vector3.forward * 5);
 
             _isRunning = true;
         }
@@ -34,13 +33,16 @@ namespace Assets._Project.Develop.Runtime.Gameplay
             if (_isRunning == false)
                 return;
 
+            if (Input.GetKeyDown(KeyCode.Space))
+                _hero.TakeDamageRequest.Invoke(50);
+
+            if (Input.GetKeyDown(KeyCode.R))
+                _hero.StartAttackRequest.Invoke();
+
             Vector3 input = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
 
-            _entity1.MoveDirection.Value = input;
-            _entity1.RotateDirection.Value = input;
-
-            _entity2.MoveDirection.Value = input;
-            _entity2.RotateDirection.Value = input;
+            _hero.MoveDirection.Value = input;
+            _hero.RotationDirection.Value = input;
         }
     }
 }

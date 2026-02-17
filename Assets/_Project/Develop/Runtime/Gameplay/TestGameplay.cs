@@ -11,7 +11,7 @@ namespace Assets._Project.Develop.Runtime.Gameplay
 
         private Entity _hero;
 
-        private bool _isRunning;
+        //private bool _isRunning;
 
         public void Initialize(DIContainer container)
         {
@@ -22,27 +22,34 @@ namespace Assets._Project.Develop.Runtime.Gameplay
 
         public void Run()
         {
-            _hero = _entitiesFactory.CreateHeroEntity(Vector3.zero);
+            _hero = _entitiesFactory.CreateHomeworkHero(Vector3.zero);
             _entitiesFactory.CreateGhostEntity(Vector3.zero + Vector3.forward * 5);
 
-            _isRunning = true;
+            //_isRunning = true;
         }
 
         private void Update()
         {
-            if (_isRunning == false)
-                return;
+            //if (_isRunning == false)
+            //    return;
 
             if (Input.GetKeyDown(KeyCode.Space))
                 _hero.TakeDamageRequest.Invoke(50);
 
-            if (Input.GetKeyDown(KeyCode.R))
-                _hero.StartAttackRequest.Invoke();
+            //if (Input.GetKeyDown(KeyCode.R))
+            //    _hero.StartAttackRequest.Invoke();
 
-            Vector3 input = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
+            if (Input.GetKeyDown(KeyCode.T))
+            {
+                _hero.TeleportationRequest.Invoke();
+                Debug.Log($"Current energy {_hero.CurrentEnergy.Value}");
+            }
 
-            _hero.MoveDirection.Value = input;
-            _hero.RotationDirection.Value = input;
+
+            //Vector3 input = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
+
+            //_hero.MoveDirection.Value = input;
+            //_hero.RotationDirection.Value = input;
         }
     }
 }

@@ -1,14 +1,18 @@
 ﻿using Assets._Project.Develop.Runtime.Gameplay.EntitiesCore.Mono;
 using Assets._Project.Develop.Runtime.Gameplay.Features.ApplyDamage;
 using Assets._Project.Develop.Runtime.Gameplay.Features.Attack;
+using Assets._Project.Develop.Runtime.Gameplay.Features.Attack.AOE;
 using Assets._Project.Develop.Runtime.Gameplay.Features.Attack.Shoot;
 using Assets._Project.Develop.Runtime.Gameplay.Features.ContactTakeDamage;
+using Assets._Project.Develop.Runtime.Gameplay.Features.Energy;
 using Assets._Project.Develop.Runtime.Gameplay.Features.LifeCycle;
 using Assets._Project.Develop.Runtime.Gameplay.Features.MovementFeature;
 using Assets._Project.Develop.Runtime.Gameplay.Features.Sensors;
+using Assets._Project.Develop.Runtime.Gameplay.Features.TeleportationFeature;
 using Assets._Project.Develop.Runtime.Infrastructure.DI;
 using Assets._Project.Develop.Runtime.Utilities;
 using Assets._Project.Develop.Runtime.Utilities.Conditions;
+using Assets._Project.Develop.Runtime.Utilities.CoroutinesManager;
 using Assets._Project.Develop.Runtime.Utilities.LayersConstsGenerated;
 using Assets._Project.Develop.Runtime.Utilities.Reactive;
 using UnityEngine;
@@ -21,6 +25,8 @@ namespace Assets._Project.Develop.Runtime.Gameplay.EntitiesCore
         private readonly EntitiesLifeContext _entitiesLifeContext;
         private readonly CollidersRegistryService _colidersRegistryService;
 
+        private readonly ICoroutinesPerformer _performer;
+
         private readonly MonoEntitiesFactory _monoEntitiesFactory;
 
         public EntitiesFactory(DIContainer container)
@@ -28,7 +34,87 @@ namespace Assets._Project.Develop.Runtime.Gameplay.EntitiesCore
             _container = container;
             _entitiesLifeContext = _container.Resolve<EntitiesLifeContext>();
             _colidersRegistryService = _container.Resolve<CollidersRegistryService>();
+            _performer = _container.Resolve<ICoroutinesPerformer>();
             _monoEntitiesFactory = _container.Resolve<MonoEntitiesFactory>();
+        }
+
+        public Entity CreateHomeworkHero(Vector3 position)
+        {
+            Entity entity = CreateEmpty();
+
+            _monoEntitiesFactory.Create(entity, position, "Entities/HomeworkHero");
+
+            entity
+                .AddMaxHealth(new ReactiveVariable<float>(100))
+                .AddCurrentHealth(new ReactiveVariable<float>(100))
+                .AddIsDead()
+                .AddInDeathProcess()
+                .AddDeathProcessInitialTime(new ReactiveVariable<float>(2))
+                .AddDeathProcessCurrentTime()
+                .AddTakeDamageRequest()
+                .AddTakeDamageEvent()
+                .AddAttackCooldownInitialTime(new ReactiveVariable<float>(2))
+                .AddAttackCooldownCurrentTime()
+                .AddInAttackCooldown()
+                .AddMaxEnergy(new ReactiveVariable<float>(100))
+                .AddCurrentEnergy(new ReactiveVariable<float>(100))
+                .AddEnergyRecoveryTimePeriod(new ReactiveVariable<float>(5))
+                .AddEnergyRecoveryCurrentTime()
+                .AddPercentToRecovery(new ReactiveVariable<float>(0.1f))
+                .AddTeleportationRequest()
+                .AddTeleportationEvent()
+                .AddTeleportationRadius(new ReactiveVariable<float>(5))
+                .AddTeleportationEnergyCost(new ReactiveVariable<float>(10))
+                .AddTeleportationCooldownInitialTime(new ReactiveVariable<float>(1))
+                .AddTeleportationCooldownCurrentTime()
+                .AddInTeleportationCooldown()
+                .AddAOEDamage(new ReactiveVariable<float>(50))
+                .AddAOERadius(new ReactiveVariable<float>(5))
+                .AddAOEDelayBeforeTakeDamage(new ReactiveVariable<float>(0.5f))
+                .AddAOEDelayCurrentTimer()
+                .AddAOETakeDamageMask(UnityLayers.LayerMaskCharacters)
+                .AddAOECollidersBuffer(new Buffer<Collider>(64))
+                .AddAOEEntitiesBuffer(new Buffer<Entity>(64));
+
+            ICompositeCondition mustDie = new CompositeCondition()
+                .Add(new FuncCondition(() => entity.CurrentHealth.Value <= 0));
+
+            ICompositeCondition mustSelfRelease = new CompositeCondition()
+                .Add(new FuncCondition(() => entity.IsDead.Value))
+                .Add(new FuncCondition(() => entity.InDeathProcess.Value == false));
+
+            ICompositeCondition canApplyDamage = new CompositeCondition()
+                .Add(new FuncCondition(() => entity.IsDead.Value == false));
+
+            ICompositeCondition canRecoverEnergy = new CompositeCondition()
+                .Add(new FuncCondition(() => entity.CurrentEnergy.Value < entity.MaxEnergy.Value))
+                .Add(new FuncCondition(() => entity.IsDead.Value == false));
+
+            ICompositeCondition canUseTeleport = new CompositeCondition()
+                .Add(new FuncCondition(() => entity.IsDead.Value == false))
+                .Add(new FuncCondition(() => entity.InTeleportationCooldown.Value == false))
+                .Add(new FuncCondition(() => entity.CurrentEnergy.Value >= entity.TeleportationEnergyCost.Value));
+
+            entity
+                .AddMustDie(mustDie)
+                .AddMustSelfRelease(mustSelfRelease)
+                .AddCanApplyDamage(canApplyDamage)
+                .AddCanRecoverEnergy(canRecoverEnergy)
+                .AddCanUseTeleport(canUseTeleport);
+
+            entity
+                .AddSystem(new EnergyRecoverySystem())
+                .AddSystem(new TeleportationSystem())
+                .AddSystem(new AOESystem(_colidersRegistryService))
+                .AddSystem(new ApplyDamageSystem())
+                .AddSystem(new DeathSystem())
+                .AddSystem(new DisableCollidersOnDeathSystem())
+                .AddSystem(new DeathProcessTimerSystem())
+                .AddSystem(new SelfReleaseSystem(_entitiesLifeContext));
+
+            _entitiesLifeContext.Add(entity);
+
+            return entity;
         }
 
         public Entity CreateHeroEntity(Vector3 position)

@@ -35,11 +35,7 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.Attack
             _currentTime.Value -= deltaTime;
 
             if (CooldownIsOver())
-            {
                 _inAttackCooldown.Value = false;
-
-                Debug.Log("Cooldown ended");
-            }
         }
 
         public void OnDispose()
@@ -49,8 +45,6 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.Attack
 
         private void OnEndAttack()
         {
-            Debug.Log("Cooldown started");
-
             _currentTime.Value = _initialTime.Value;
             _inAttackCooldown.Value = true;
         }

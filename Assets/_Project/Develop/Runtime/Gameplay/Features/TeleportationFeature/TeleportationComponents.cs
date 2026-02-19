@@ -43,4 +43,9 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.TeleportationFeature
     {
         public ReactiveVariable<bool> Value;
     }
+
+    public class IsTeleportationCompleted : IEntityComponent
+    {
+        public ReactiveEvent Value;
+    }
 }

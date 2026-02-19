@@ -25,8 +25,6 @@ namespace Assets._Project.Develop.Runtime.Gameplay.EntitiesCore
         private readonly EntitiesLifeContext _entitiesLifeContext;
         private readonly CollidersRegistryService _colidersRegistryService;
 
-        private readonly ICoroutinesPerformer _performer;
-
         private readonly MonoEntitiesFactory _monoEntitiesFactory;
 
         public EntitiesFactory(DIContainer container)
@@ -34,7 +32,6 @@ namespace Assets._Project.Develop.Runtime.Gameplay.EntitiesCore
             _container = container;
             _entitiesLifeContext = _container.Resolve<EntitiesLifeContext>();
             _colidersRegistryService = _container.Resolve<CollidersRegistryService>();
-            _performer = _container.Resolve<ICoroutinesPerformer>();
             _monoEntitiesFactory = _container.Resolve<MonoEntitiesFactory>();
         }
 

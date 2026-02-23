@@ -63,7 +63,7 @@ namespace Assets._Project.Develop.Runtime.Infrastructure.EntryPoint
 
             loadingScreen.Hide();
 
-            yield return sceneSwitcherService.ProcessSwitchTo(Scenes.Gameplay, new GameplayInputArgs(GameplayTypes.Numbers));
+            yield return sceneSwitcherService.ProcessSwitchTo(Scenes.Gameplay, new GameplayInputArgs());
             //yield return sceneSwitcherService.ProcessSwitchTo(Scenes.MainMenu);
         }
     }

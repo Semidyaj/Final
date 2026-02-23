@@ -191,26 +191,74 @@ namespace Assets._Project.Develop.Runtime.Gameplay.EntitiesCore
 
 		public Assets._Project.Develop.Runtime.Gameplay.Features.TeleportationFeature.IsTeleportationCompleted IsTeleportationCompletedC => GetComponent<Assets._Project.Develop.Runtime.Gameplay.Features.TeleportationFeature.IsTeleportationCompleted>();
 
-		public Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveEvent IsTeleportationCompleted => IsTeleportationCompletedC.Value;
+		public Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<System.Boolean> IsTeleportationCompleted => IsTeleportationCompletedC.Value;
 
-		public bool TryGetIsTeleportationCompleted(out Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveEvent value)
+		public bool TryGetIsTeleportationCompleted(out Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<System.Boolean> value)
 		{
 			bool result = TryGetComponent(out Assets._Project.Develop.Runtime.Gameplay.Features.TeleportationFeature.IsTeleportationCompleted component);
 			if(result)
 				value = component.Value;
 			else
-				value = default(Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveEvent);
+				value = default(Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<System.Boolean>);
 			return result;
 		}
 
 		public Assets._Project.Develop.Runtime.Gameplay.EntitiesCore.Entity AddIsTeleportationCompleted()
 		{
-			return AddComponent(new Assets._Project.Develop.Runtime.Gameplay.Features.TeleportationFeature.IsTeleportationCompleted() {Value = new Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveEvent() });
+			return AddComponent(new Assets._Project.Develop.Runtime.Gameplay.Features.TeleportationFeature.IsTeleportationCompleted() {Value = new Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<System.Boolean>() });
 		}
 
-		public Assets._Project.Develop.Runtime.Gameplay.EntitiesCore.Entity AddIsTeleportationCompleted(Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveEvent value)
+		public Assets._Project.Develop.Runtime.Gameplay.EntitiesCore.Entity AddIsTeleportationCompleted(Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<System.Boolean> value)
 		{
 			return AddComponent(new Assets._Project.Develop.Runtime.Gameplay.Features.TeleportationFeature.IsTeleportationCompleted() {Value = value});
+		}
+
+		public Assets._Project.Develop.Runtime.Gameplay.Features.TeleportationFeature.TeleportationTargetPoint TeleportationTargetPointC => GetComponent<Assets._Project.Develop.Runtime.Gameplay.Features.TeleportationFeature.TeleportationTargetPoint>();
+
+		public Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<UnityEngine.Vector3> TeleportationTargetPoint => TeleportationTargetPointC.Value;
+
+		public bool TryGetTeleportationTargetPoint(out Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<UnityEngine.Vector3> value)
+		{
+			bool result = TryGetComponent(out Assets._Project.Develop.Runtime.Gameplay.Features.TeleportationFeature.TeleportationTargetPoint component);
+			if(result)
+				value = component.Value;
+			else
+				value = default(Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<UnityEngine.Vector3>);
+			return result;
+		}
+
+		public Assets._Project.Develop.Runtime.Gameplay.EntitiesCore.Entity AddTeleportationTargetPoint()
+		{
+			return AddComponent(new Assets._Project.Develop.Runtime.Gameplay.Features.TeleportationFeature.TeleportationTargetPoint() {Value = new Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<UnityEngine.Vector3>() });
+		}
+
+		public Assets._Project.Develop.Runtime.Gameplay.EntitiesCore.Entity AddTeleportationTargetPoint(Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<UnityEngine.Vector3> value)
+		{
+			return AddComponent(new Assets._Project.Develop.Runtime.Gameplay.Features.TeleportationFeature.TeleportationTargetPoint() {Value = value});
+		}
+
+		public Assets._Project.Develop.Runtime.Gameplay.Features.TeleportationFeature.IsTeleportationTargetPointFinded IsTeleportationTargetPointFindedC => GetComponent<Assets._Project.Develop.Runtime.Gameplay.Features.TeleportationFeature.IsTeleportationTargetPointFinded>();
+
+		public Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<System.Boolean> IsTeleportationTargetPointFinded => IsTeleportationTargetPointFindedC.Value;
+
+		public bool TryGetIsTeleportationTargetPointFinded(out Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<System.Boolean> value)
+		{
+			bool result = TryGetComponent(out Assets._Project.Develop.Runtime.Gameplay.Features.TeleportationFeature.IsTeleportationTargetPointFinded component);
+			if(result)
+				value = component.Value;
+			else
+				value = default(Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<System.Boolean>);
+			return result;
+		}
+
+		public Assets._Project.Develop.Runtime.Gameplay.EntitiesCore.Entity AddIsTeleportationTargetPointFinded()
+		{
+			return AddComponent(new Assets._Project.Develop.Runtime.Gameplay.Features.TeleportationFeature.IsTeleportationTargetPointFinded() {Value = new Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<System.Boolean>() });
+		}
+
+		public Assets._Project.Develop.Runtime.Gameplay.EntitiesCore.Entity AddIsTeleportationTargetPointFinded(Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<System.Boolean> value)
+		{
+			return AddComponent(new Assets._Project.Develop.Runtime.Gameplay.Features.TeleportationFeature.IsTeleportationTargetPointFinded() {Value = value});
 		}
 
 		public Assets._Project.Develop.Runtime.Gameplay.Features.Sensors.BodyCollider BodyColliderC => GetComponent<Assets._Project.Develop.Runtime.Gameplay.Features.Sensors.BodyCollider>();

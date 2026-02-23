@@ -27,11 +27,22 @@ namespace Assets._Project.Develop.Runtime.Gameplay
 
         public void Run()
         {
-            _hero = _entitiesFactory.CreateHeroEntity(Vector3.zero);
-            _hero.AddCurrentTarget();
-            _brainsFactory.CreateMainHeroBrain(_hero, new NearestDamagableTargetSelector(_hero));
+            //_hero = _entitiesFactory.CreateHeroEntity(Vector3.zero);
+            //_hero.AddCurrentTarget();
+            //_brainsFactory.CreateMainHeroBrain(_hero, new NearestDamagableTargetSelector(_hero));
 
-            _ghostAI = _entitiesFactory.CreateGhostEntity(Vector3.zero + Vector3.forward * 5);
+            _hero = _entitiesFactory.CreateHeroEntity(Vector3.zero);
+            _brainsFactory.CreateMainInputHeroBrain(_hero);
+
+            //_hero = _entitiesFactory.CreateHomeworkHero(Vector3.zero);
+            //_brainsFactory.CreateRandomTeleportationHeroBrain(_hero);
+            //_brainsFactory.CreateRandomTeleportationBrain(_hero);
+            //_brainsFactory.CreateTeleportationToLeastHealthTargetBrain(_hero, new FindEnemyWithLeastHealthSelector(_hero));
+
+            _entitiesFactory.CreateGhostEntity(Vector3.zero + Vector3.forward * 5);
+            _entitiesFactory.CreateGhostEntity(Vector3.zero - Vector3.forward * 5);
+            _entitiesFactory.CreateGhostEntity(Vector3.zero + Vector3.right * 5);
+            _entitiesFactory.CreateGhostEntity(Vector3.zero - Vector3.right * 5);
 
             _isRunning = true;
         }

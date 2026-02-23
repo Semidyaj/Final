@@ -60,18 +60,22 @@ namespace Assets._Project.Develop.Runtime.Gameplay.EntitiesCore
                 .AddPercentToRecovery(new ReactiveVariable<float>(0.1f))
                 .AddTeleportationRequest()
                 .AddTeleportationEvent()
-                .AddTeleportationRadius(new ReactiveVariable<float>(5))
-                .AddTeleportationEnergyCost(new ReactiveVariable<float>(10))
-                .AddTeleportationCooldownInitialTime(new ReactiveVariable<float>(1))
+                .AddTeleportationRadius(new ReactiveVariable<float>(10))
+                .AddTeleportationEnergyCost(new ReactiveVariable<float>(50))
+                .AddTeleportationCooldownInitialTime(new ReactiveVariable<float>(5))
                 .AddTeleportationCooldownCurrentTime()
                 .AddInTeleportationCooldown()
-                .AddAOEDamage(new ReactiveVariable<float>(50))
+                .AddIsTeleportationCompleted()
+                .AddTeleportationTargetPoint()
+                .AddIsTeleportationTargetPointFinded()
+                .AddAOEDamage(new ReactiveVariable<float>(100))
                 .AddAOERadius(new ReactiveVariable<float>(5))
                 .AddAOEDelayBeforeTakeDamage(new ReactiveVariable<float>(0.5f))
                 .AddAOEDelayCurrentTimer()
                 .AddAOETakeDamageMask(UnityLayers.LayerMaskCharacters)
                 .AddAOECollidersBuffer(new Buffer<Collider>(64))
-                .AddAOEEntitiesBuffer(new Buffer<Entity>(64));
+                .AddAOEEntitiesBuffer(new Buffer<Entity>(64))
+                .AddCurrentTarget();
 
             ICompositeCondition mustDie = new CompositeCondition()
                 .Add(new FuncCondition(() => entity.CurrentHealth.Value <= 0));
@@ -87,21 +91,21 @@ namespace Assets._Project.Develop.Runtime.Gameplay.EntitiesCore
                 .Add(new FuncCondition(() => entity.CurrentEnergy.Value < entity.MaxEnergy.Value))
                 .Add(new FuncCondition(() => entity.IsDead.Value == false));
 
-            ICompositeCondition canUseTeleport = new CompositeCondition()
-                .Add(new FuncCondition(() => entity.IsDead.Value == false))
-                .Add(new FuncCondition(() => entity.InTeleportationCooldown.Value == false))
-                .Add(new FuncCondition(() => entity.CurrentEnergy.Value >= entity.TeleportationEnergyCost.Value));
+            //ICompositeCondition canUseTeleport = new CompositeCondition()
+            //    .Add(new FuncCondition(() => entity.IsDead.Value == false))
+            //    .Add(new FuncCondition(() => entity.InTeleportationCooldown.Value == false))
+            //    .Add(new FuncCondition(() => entity.CurrentEnergy.Value >= entity.TeleportationEnergyCost.Value));
 
             entity
                 .AddMustDie(mustDie)
                 .AddMustSelfRelease(mustSelfRelease)
                 .AddCanApplyDamage(canApplyDamage)
-                .AddCanRecoverEnergy(canRecoverEnergy)
-                .AddCanUseTeleport(canUseTeleport);
+                .AddCanRecoverEnergy(canRecoverEnergy);
+                //.AddCanUseTeleport(canUseTeleport);
 
             entity
                 .AddSystem(new EnergyRecoverySystem())
-                .AddSystem(new TeleportationSystem())
+                //.AddSystem(new TeleportationSystem())
                 .AddSystem(new AOESystem(_colidersRegistryService))
                 .AddSystem(new ApplyDamageSystem())
                 .AddSystem(new DeathSystem())

@@ -1,5 +1,6 @@
 ﻿using Assets._Project.Develop.Runtime.Gameplay.EntitiesCore;
 using Assets._Project.Develop.Runtime.Gameplay.Features.AI.States;
+using Assets._Project.Develop.Runtime.Gameplay.Features.AI.States.Teleportation;
 using Assets._Project.Develop.Runtime.Gameplay.Features.AI.TargetSelectors;
 using Assets._Project.Develop.Runtime.Gameplay.Features.InputFeature;
 using Assets._Project.Develop.Runtime.Infrastructure.DI;
@@ -30,6 +31,159 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.AI
             _entitiesLifeContext = _container.Resolve<EntitiesLifeContext>();
 
         }
+
+        public StateMachineBrain CreateTeleportationToLeastHealthTargetBrain(Entity entity, ITargetSelector targetSelector)
+        {
+            CooldownState cooldownState = new CooldownState(entity);
+            FindTargetWithLeastHealthState findTargetState = new FindTargetWithLeastHealthState(targetSelector, _entitiesLifeContext, entity);
+            TeleportationProcessState teleportationState = new TeleportationProcessState(entity);
+
+            ICompositeCondition fromCooldownToFindTargetPointCondition = new CompositeCondition()
+                .Add(new FuncCondition(() => entity.TeleportationCooldownCurrentTime.Value >= entity.TeleportationCooldownInitialTime.Value))
+                .Add(new FuncCondition(() => entity.CurrentEnergy.Value >= entity.TeleportationEnergyCost.Value))
+                .Add(new FuncCondition(() => entity.CurrentEnergy.Value >= entity.TeleportationEnergyCost.Value * 0.4f));
+
+            FuncCondition targetPointFound = new FuncCondition(() => entity.CurrentTarget.Value != null);
+            FuncCondition teleportEnded = new FuncCondition(() => entity.IsTeleportationCompleted.Value);
+
+            AIStateMachine stateMachine = new AIStateMachine();
+
+            stateMachine.AddState(cooldownState);
+            stateMachine.AddState(findTargetState);
+            stateMachine.AddState(teleportationState);
+
+            stateMachine.AddTransition(cooldownState, findTargetState, fromCooldownToFindTargetPointCondition);
+            stateMachine.AddTransition(findTargetState, teleportationState, targetPointFound);
+            stateMachine.AddTransition(teleportationState, cooldownState, teleportEnded);
+
+            StateMachineBrain brain = new StateMachineBrain(stateMachine);
+
+            _brainsContext.SetFor(entity, brain);
+
+            return brain;
+        }
+
+        public StateMachineBrain CreateRandomTeleportationBrain(Entity entity)
+        {
+            CooldownState cooldownState = new CooldownState(entity);
+            FindRandomPointInRadiusState findPointState = new FindRandomPointInRadiusState(entity);
+            TeleportationProcessState teleportationState = new TeleportationProcessState(entity);
+
+            ICompositeCondition fromCooldownToFindTargetPointCondition = new CompositeCondition()
+                .Add(new FuncCondition(() => entity.TeleportationCooldownCurrentTime.Value >= entity.TeleportationCooldownInitialTime.Value))
+                .Add(new FuncCondition(() => entity.CurrentEnergy.Value >= entity.TeleportationEnergyCost.Value));
+
+            FuncCondition targetPointFound = new FuncCondition(() => entity.IsTeleportationTargetPointFinded.Value);
+            FuncCondition teleportEnded = new FuncCondition(() => entity.IsTeleportationCompleted.Value);
+
+            AIStateMachine stateMachine = new AIStateMachine();
+
+            stateMachine.AddState(cooldownState);
+            stateMachine.AddState(findPointState);
+            stateMachine.AddState(teleportationState);
+
+            stateMachine.AddTransition(cooldownState, findPointState, fromCooldownToFindTargetPointCondition);
+            stateMachine.AddTransition(findPointState, teleportationState, targetPointFound);
+            stateMachine.AddTransition(teleportationState, cooldownState, teleportEnded);
+
+            StateMachineBrain brain = new StateMachineBrain(stateMachine);
+
+            _brainsContext.SetFor(entity, brain);
+
+            return brain;
+        }
+
+        public StateMachineBrain CreateRandomTeleportationHeroBrain(Entity entity)
+        {
+            CooldownState cooldownState = new CooldownState(entity);
+            AIStateMachine teleportationState = CreateRandomTeleportationStateMachine(entity);
+
+            ICompositeCondition fromCooldownToTeleportationCondition = new CompositeCondition()
+                .Add(new FuncCondition(() => entity.TeleportationCooldownCurrentTime.Value >= entity.TeleportationCooldownInitialTime.Value))
+                .Add(new FuncCondition(() => entity.CurrentEnergy.Value >= entity.TeleportationEnergyCost.Value));
+
+            FuncCondition fromTeleportationToCooldownCondition = new FuncCondition(() 
+                => entity.IsTeleportationCompleted.Value);
+
+            AIStateMachine stateMachine = new AIStateMachine();
+
+            stateMachine.AddState(cooldownState);
+            stateMachine.AddState(teleportationState);
+
+            stateMachine.AddTransition(cooldownState, teleportationState, fromCooldownToTeleportationCondition);
+            stateMachine.AddTransition(teleportationState, cooldownState, fromTeleportationToCooldownCondition);
+
+            StateMachineBrain brain = new StateMachineBrain(stateMachine);
+
+            _brainsContext.SetFor(entity, brain);
+
+            return brain;
+        }
+
+        public AIStateMachine CreateRandomTeleportationStateMachine(Entity entity)
+        {
+            FindRandomPointInRadiusState findPointState = new FindRandomPointInRadiusState(entity);
+            TeleportationProcessState teleportationState = new TeleportationProcessState(entity);
+
+            FuncCondition targetPointFound = new FuncCondition(() => entity.IsTeleportationTargetPointFinded.Value);
+            //FuncCondition teleportEnded = new FuncCondition(() => entity.IsTeleportationCompleted.Value);
+
+            AIStateMachine stateMachine = new AIStateMachine();
+
+            stateMachine.AddState(findPointState);
+            stateMachine.AddState(teleportationState);
+
+            stateMachine.AddTransition(findPointState, teleportationState, targetPointFound);
+            //stateMachine.AddTransition(teleportationState, findPointState, teleportEnded);
+
+            return stateMachine;
+        }
+
+        public StateMachineBrain CreateMainInputHeroBrain(Entity entity)
+        {
+            AIStateMachine combatState = CreateInputAttackStateMachine(entity);
+            PlayerInputMovementState movementState = new PlayerInputMovementState(entity, _inputService);
+
+            FuncCondition fromMovementToCombatCondition = new FuncCondition(() => _inputService.Direction == Vector3.zero);
+            FuncCondition fromCombatToMovementCondition = new FuncCondition(() => _inputService.Direction != Vector3.zero);
+
+            AIStateMachine stateMachine = new AIStateMachine();
+
+            stateMachine.AddState(combatState);
+            stateMachine.AddState(movementState);
+
+            stateMachine.AddTransition(movementState, combatState, fromMovementToCombatCondition);
+            stateMachine.AddTransition(combatState, movementState, fromCombatToMovementCondition);
+
+            StateMachineBrain brain = new StateMachineBrain(stateMachine);
+
+            _brainsContext.SetFor(entity, brain);
+
+            return brain;
+        }
+
+        public AIStateMachine CreateInputAttackStateMachine(Entity entity)
+        {
+            PlayerInputRotationState rotationState = new PlayerInputRotationState(entity, _inputService);
+            AttackTriggerState attackState = new AttackTriggerState(entity);
+
+            ICompositeCondition fromRotateToAttackCondition = new CompositeCondition()
+                .Add(entity.CanStartAttack)
+                .Add(new FuncCondition(() => _inputService.LeftMouseButtonClicked));
+
+            FuncCondition fromAttackToRotateCondition = new FuncCondition(() => entity.InAttackProcess.Value == false);
+
+            AIStateMachine stateMachine = new AIStateMachine();
+
+            stateMachine.AddState(rotationState);
+            stateMachine.AddState(attackState);
+
+            stateMachine.AddTransition(rotationState, attackState, fromRotateToAttackCondition);
+            stateMachine.AddTransition(attackState, rotationState, fromAttackToRotateCondition);
+
+            return stateMachine;
+        }
+
 
         public StateMachineBrain CreateMainHeroBrain(Entity entity, ITargetSelector targetSelector)
         {

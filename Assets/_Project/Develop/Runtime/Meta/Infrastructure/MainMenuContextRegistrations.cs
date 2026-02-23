@@ -1,7 +1,4 @@
-﻿using Assets._Project.Develop.Runtime.Configs.Meta.Economy;
-using Assets._Project.Develop.Runtime.Infrastructure.DI;
-using Assets._Project.Develop.Runtime.Meta.Features.StatisticsService;
-using Assets._Project.Develop.Runtime.Meta.Features.Wallet;
+﻿using Assets._Project.Develop.Runtime.Infrastructure.DI;
 using Assets._Project.Develop.Runtime.UI;
 using Assets._Project.Develop.Runtime.UI.Core;
 using Assets._Project.Develop.Runtime.UI.MainMenu;
@@ -14,10 +11,6 @@ namespace Assets._Project.Develop.Runtime.Meta.Infrastructure
     {
         public static void Process(DIContainer container)
         {
-            container.RegisterAsSingle(CreateGameModeChooseService);
-
-            container.RegisterAsSingle(CreateResetStatistics);
-
             container.RegisterAsSingle(CreateMainMenuUIRoot).NonLazy();
 
             container.RegisterAsSingle(CreateMainMenuPresentersFactory);
@@ -55,11 +48,5 @@ namespace Assets._Project.Develop.Runtime.Meta.Infrastructure
 
             return Object.Instantiate(mainMenuUIRootPrefab);
         }
-
-        private static ResetStatistics CreateResetStatistics(DIContainer c)
-            => new ResetStatistics(c.Resolve<WalletService>(), c.Resolve<GameplayStatisticsService>(), c.Resolve<GameplayEconomyConfig>());
-
-        private static GameModeChooseService CreateGameModeChooseService(DIContainer c)
-            => new GameModeChooseService();
     }
 }

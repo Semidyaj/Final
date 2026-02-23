@@ -1,4 +1,6 @@
 ﻿using Assets._Project.Develop.Runtime.Gameplay.EntitiesCore;
+using Assets._Project.Develop.Runtime.Gameplay.Features.AI;
+using Assets._Project.Develop.Runtime.Gameplay.Features.AI.TargetSelectors;
 using Assets._Project.Develop.Runtime.Infrastructure.DI;
 using UnityEngine;
 
@@ -8,48 +10,62 @@ namespace Assets._Project.Develop.Runtime.Gameplay
     {
         private DIContainer _container;
         private EntitiesFactory _entitiesFactory;
+        private BrainsFactory _brainsFactory;
 
         private Entity _hero;
+        private Entity _ghostAI;
 
-        //private bool _isRunning;
+        private bool _isRunning;
 
         public void Initialize(DIContainer container)
         {
             _container = container;
 
             _entitiesFactory = _container.Resolve<EntitiesFactory>();
+            _brainsFactory = _container.Resolve<BrainsFactory>();
         }
 
         public void Run()
         {
-            _hero = _entitiesFactory.CreateHomeworkHero(Vector3.zero);
-            _entitiesFactory.CreateGhostEntity(Vector3.zero + Vector3.forward * 5);
+            //_hero = _entitiesFactory.CreateHeroEntity(Vector3.zero);
+            //_hero.AddCurrentTarget();
+            //_brainsFactory.CreateMainHeroBrain(_hero, new NearestDamagableTargetSelector(_hero));
 
-            //_isRunning = true;
+            _hero = _entitiesFactory.CreateHeroEntity(Vector3.zero);
+            _brainsFactory.CreateMainInputHeroBrain(_hero);
+
+            //_hero = _entitiesFactory.CreateHomeworkHero(Vector3.zero);
+            //_brainsFactory.CreateRandomTeleportationHeroBrain(_hero);
+            //_brainsFactory.CreateRandomTeleportationBrain(_hero);
+            //_brainsFactory.CreateTeleportationToLeastHealthTargetBrain(_hero, new FindEnemyWithLeastHealthSelector(_hero));
+
+            _entitiesFactory.CreateGhostEntity(Vector3.zero + Vector3.forward * 5);
+            _entitiesFactory.CreateGhostEntity(Vector3.zero - Vector3.forward * 5);
+            _entitiesFactory.CreateGhostEntity(Vector3.zero + Vector3.right * 5);
+            _entitiesFactory.CreateGhostEntity(Vector3.zero - Vector3.right * 5);
+
+            _isRunning = true;
         }
 
         private void Update()
         {
-            //if (_isRunning == false)
-            //    return;
+            if (_isRunning == false)
+                return;
 
             if (Input.GetKeyDown(KeyCode.Space))
                 _hero.TakeDamageRequest.Invoke(50);
 
-            //if (Input.GetKeyDown(KeyCode.R))
-            //    _hero.StartAttackRequest.Invoke();
+            if (Input.GetKeyDown(KeyCode.R))
+                _hero.StartAttackRequest.Invoke();
 
-            if (Input.GetKeyDown(KeyCode.T))
-            {
-                _hero.TeleportationRequest.Invoke();
-                Debug.Log($"Current energy {_hero.CurrentEnergy.Value}");
-            }
+            //if (Input.GetKeyDown(KeyCode.T))
+            //{
+            //    _hero.TeleportationRequest.Invoke();
+            //    Debug.Log($"Current energy {_hero.CurrentEnergy.Value}");
+            //}
 
-
-            //Vector3 input = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
-
-            //_hero.MoveDirection.Value = input;
-            //_hero.RotationDirection.Value = input;
+            if (Input.GetKeyDown(KeyCode.I))
+                _brainsFactory.CreateGhostBrain(_ghostAI);
         }
     }
 }

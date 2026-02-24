@@ -1,7 +1,9 @@
 ﻿using Assets._Project.Develop.Runtime.Gameplay.EntitiesCore;
 using Assets._Project.Develop.Runtime.Gameplay.EntitiesCore.Mono;
 using Assets._Project.Develop.Runtime.Gameplay.Features.AI;
+using Assets._Project.Develop.Runtime.Gameplay.Features.Enemies;
 using Assets._Project.Develop.Runtime.Gameplay.Features.InputFeature;
+using Assets._Project.Develop.Runtime.Gameplay.Features.MainHero;
 using Assets._Project.Develop.Runtime.Infrastructure.DI;
 using Assets._Project.Develop.Runtime.Utilities.AssetsManagment;
 
@@ -21,10 +23,20 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Infrastructure
 
             container.RegisterAsSingle(CreateAIBrainsContext);
 
+            container.RegisterAsSingle(CreateMainHeroFactory);
+
+            container.RegisterAsSingle(CreateEnemiesFactory);
+
             container.RegisterAsSingle<IInputService>(CreateDesktopInput);
 
             container.RegisterAsSingle(CreateMonoEntitiesFactory).NonLazy();
         }
+
+        private static EnemiesFactory CreateEnemiesFactory(DIContainer c)
+            => new EnemiesFactory(c);
+
+        private static MainHeroFactory CreateMainHeroFactory(DIContainer c)
+            => new MainHeroFactory(c);
 
         private static DesktopInput CreateDesktopInput(DIContainer c)
             => new DesktopInput();

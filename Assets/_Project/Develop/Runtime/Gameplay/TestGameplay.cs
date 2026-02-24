@@ -1,6 +1,8 @@
-﻿using Assets._Project.Develop.Runtime.Gameplay.EntitiesCore;
+﻿using Assets._Project.Develop.Runtime.Configs.Gameplay.Entities;
+using Assets._Project.Develop.Runtime.Gameplay.EntitiesCore;
 using Assets._Project.Develop.Runtime.Gameplay.Features.AI;
-using Assets._Project.Develop.Runtime.Gameplay.Features.AI.TargetSelectors;
+using Assets._Project.Develop.Runtime.Gameplay.Features.Enemies;
+using Assets._Project.Develop.Runtime.Gameplay.Features.MainHero;
 using Assets._Project.Develop.Runtime.Infrastructure.DI;
 using UnityEngine;
 
@@ -12,8 +14,15 @@ namespace Assets._Project.Develop.Runtime.Gameplay
         private EntitiesFactory _entitiesFactory;
         private BrainsFactory _brainsFactory;
 
+        private MainHeroFactory _mainHeroFactory;
+        private EnemiesFactory _enemiesFactory;
+
         private Entity _hero;
         private Entity _ghostAI;
+
+        [SerializeField] private GhostConfig _ghostConfig;
+        [SerializeField] private HeroConfig _heroConfig;
+        [SerializeField] private HomeworkHeroConfig _homeworkHeroConfig;
 
         private bool _isRunning;
 
@@ -23,26 +32,21 @@ namespace Assets._Project.Develop.Runtime.Gameplay
 
             _entitiesFactory = _container.Resolve<EntitiesFactory>();
             _brainsFactory = _container.Resolve<BrainsFactory>();
+
+            _mainHeroFactory = _container.Resolve<MainHeroFactory>();
+            _enemiesFactory = _container.Resolve<EnemiesFactory>();
         }
 
         public void Run()
         {
-            //_hero = _entitiesFactory.CreateHeroEntity(Vector3.zero);
-            //_hero.AddCurrentTarget();
-            //_brainsFactory.CreateMainHeroBrain(_hero, new NearestDamagableTargetSelector(_hero));
+            _hero = _mainHeroFactory.Create(Vector3.zero);
 
-            _hero = _entitiesFactory.CreateHeroEntity(Vector3.zero);
-            _brainsFactory.CreateMainInputHeroBrain(_hero);
+            //_hero = _mainHeroFactory.CreateHomeworkHero(Vector3.zero);
 
-            //_hero = _entitiesFactory.CreateHomeworkHero(Vector3.zero);
-            //_brainsFactory.CreateRandomTeleportationHeroBrain(_hero);
-            //_brainsFactory.CreateRandomTeleportationBrain(_hero);
-            //_brainsFactory.CreateTeleportationToLeastHealthTargetBrain(_hero, new FindEnemyWithLeastHealthSelector(_hero));
-
-            _entitiesFactory.CreateGhostEntity(Vector3.zero + Vector3.forward * 5);
-            _entitiesFactory.CreateGhostEntity(Vector3.zero - Vector3.forward * 5);
-            _entitiesFactory.CreateGhostEntity(Vector3.zero + Vector3.right * 5);
-            _entitiesFactory.CreateGhostEntity(Vector3.zero - Vector3.right * 5);
+            _enemiesFactory.Create(Vector3.zero + Vector3.forward * 5, _ghostConfig);
+            _enemiesFactory.Create(Vector3.zero - Vector3.forward * 5, _ghostConfig);
+            _enemiesFactory.Create(Vector3.zero + Vector3.right * 5, _ghostConfig);
+            _enemiesFactory.Create(Vector3.zero - Vector3.right * 5, _ghostConfig);
 
             _isRunning = true;
         }
@@ -51,21 +55,6 @@ namespace Assets._Project.Develop.Runtime.Gameplay
         {
             if (_isRunning == false)
                 return;
-
-            if (Input.GetKeyDown(KeyCode.Space))
-                _hero.TakeDamageRequest.Invoke(50);
-
-            if (Input.GetKeyDown(KeyCode.R))
-                _hero.StartAttackRequest.Invoke();
-
-            //if (Input.GetKeyDown(KeyCode.T))
-            //{
-            //    _hero.TeleportationRequest.Invoke();
-            //    Debug.Log($"Current energy {_hero.CurrentEnergy.Value}");
-            //}
-
-            if (Input.GetKeyDown(KeyCode.I))
-                _brainsFactory.CreateGhostBrain(_ghostAI);
         }
     }
 }

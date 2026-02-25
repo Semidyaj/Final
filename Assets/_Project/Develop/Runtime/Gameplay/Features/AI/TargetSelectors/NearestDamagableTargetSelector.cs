@@ -29,6 +29,8 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.AI.TargetSelectors
                     result = result && canApplyDamage.Evaluate();
                 }
 
+                result = result && EntitiesHelper.IsSameTeam(_source, target) == false;
+
                 result = result && target != _source;
 
                 return result;

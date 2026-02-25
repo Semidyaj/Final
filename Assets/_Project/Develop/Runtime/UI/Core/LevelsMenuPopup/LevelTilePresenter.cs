@@ -75,7 +75,7 @@ namespace Assets._Project.Develop.Runtime.UI.Core.LevelsMenuPopup
 
             _coroutinesPerformer
                 .StartPerform(_sceneSwitcherService
-                    .ProcessSwitchTo(Scenes.Gameplay, new GameplayInputArgs()));
+                    .ProcessSwitchTo(Scenes.Gameplay, new GameplayInputArgs(1)));
         }
     }
 }

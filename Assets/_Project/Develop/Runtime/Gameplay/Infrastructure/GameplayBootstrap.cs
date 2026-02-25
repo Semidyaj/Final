@@ -1,8 +1,11 @@
 ﻿using Assets._Project.Develop.Runtime.Gameplay.EntitiesCore;
 using Assets._Project.Develop.Runtime.Gameplay.Features.AI;
+using Assets._Project.Develop.Runtime.Gameplay.Features.MainHero;
+using Assets._Project.Develop.Runtime.Gameplay.States;
 using Assets._Project.Develop.Runtime.Infrastructure;
 using Assets._Project.Develop.Runtime.Infrastructure.DI;
 using Assets._Project.Develop.Runtime.Utilities.ConfigsManagment;
+using Assets._Project.Develop.Runtime.Utilities.CoroutinesManager;
 using Assets._Project.Develop.Runtime.Utilities.SceneManagment;
 using System;
 using System.Collections;
@@ -12,9 +15,9 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Infrastructure
 {
     public class GameplayBootstrap : SceneBootstrap
     {
-        [SerializeField] private TestGameplay _testGameplay;
-
         private DIContainer _container;
+
+        private GameplayStatesContext _gameplayStatesContext;
 
         private GameplayInputArgs _inputArgs;
 
@@ -36,25 +39,36 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Infrastructure
 
         public override IEnumerator Initialize()
         {
-            ConfigsProviderService configsProviderService = _container.Resolve<ConfigsProviderService>();
+            //ConfigsProviderService configsProviderService = _container.Resolve<ConfigsProviderService>();
 
-            yield return configsProviderService.LoadAsync();
-
-            _testGameplay.Initialize(_container);
+            //yield return configsProviderService.LoadAsync();
 
             _entitiesLifeContext = _container.Resolve<EntitiesLifeContext>();
             _brainsContext = _container.Resolve<AIBrainsContext>();
+            _gameplayStatesContext = _container.Resolve<GameplayStatesContext>();
+
+            _container.Resolve<MainHeroFactory>().Create(Vector3.zero);
+
+            yield break;
         }
 
         public override void Run()
         {
-            _testGameplay.Run();
+            _gameplayStatesContext.Run();
         }
 
         private void Update()
         {
             _brainsContext?.Update(Time.deltaTime);
             _entitiesLifeContext?.Update(Time.deltaTime);
+            _gameplayStatesContext?.Update(Time.deltaTime);
+
+            if (Input.GetKeyDown(KeyCode.F))
+            {
+                SceneSwitcherService sceneSwitcherService = _container.Resolve<SceneSwitcherService>();
+                ICoroutinesPerformer coroutinesPerformer = _container.Resolve<ICoroutinesPerformer>();
+                coroutinesPerformer.StartPerform(sceneSwitcherService.ProcessSwitchTo(Scenes.MainMenu));
+            }
         }
     }
 }

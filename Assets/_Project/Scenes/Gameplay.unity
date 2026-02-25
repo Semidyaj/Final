@@ -493,7 +493,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1927192636}
   - component: {fileID: 1927192635}
-  - component: {fileID: 1927192637}
   m_Layer: 0
   m_Name: Bootstrap
   m_TagString: Untagged
@@ -513,7 +512,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25f78de11db90c24d80297cfc0c88dd5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _testGameplay: {fileID: 1927192637}
 --- !u!4 &1927192636
 Transform:
   m_ObjectHideFlags: 0
@@ -529,22 +527,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1927192637
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1927192634}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 623eaa1285eb7354993b835a563167b7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _ghostConfig: {fileID: 11400000, guid: 214308ed8199a10458dec4fe94bcdab5, type: 2}
-  _heroConfig: {fileID: 11400000, guid: 628a9a63cf3921b40924bac8ebad8448, type: 2}
-  _homeworkHeroConfig: {fileID: 11400000, guid: add78f1eab8652a4db5217fef49df9e8,
-    type: 2}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

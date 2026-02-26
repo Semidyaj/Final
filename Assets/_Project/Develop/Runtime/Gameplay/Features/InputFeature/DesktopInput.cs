@@ -34,7 +34,7 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.InputFeature
             }
         }
 
-        public bool LeftMouseButtonClicked
+        public bool IsMainActionPerformed
         {
             get
             {

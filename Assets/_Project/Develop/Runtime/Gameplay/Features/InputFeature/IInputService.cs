@@ -8,6 +8,6 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.InputFeature
 
         Vector3 Direction { get; }
         Vector3 RotationX { get; }
-        bool LeftMouseButtonClicked { get; }
+        bool IsMainActionPerformed { get; }
     }
 }

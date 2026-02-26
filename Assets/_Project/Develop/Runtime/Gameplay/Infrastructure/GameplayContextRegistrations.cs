@@ -35,6 +35,7 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Infrastructure
 
             container.RegisterAsSingle(CreateBrainsFactory);
             container.RegisterAsSingle(CreateAIBrainsContext);
+            container.RegisterAsSingle(CreateStateMachineFactory);
 
             container.RegisterAsSingle(CreateMainHeroFactory);
             container.RegisterAsSingle(CreateEnemiesFactory);
@@ -54,6 +55,9 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Infrastructure
 
             container.RegisterAsSingle(CreateGameplayResultHandler).NonLazy();
         }
+
+        private static StateMachineFactory CreateStateMachineFactory(DIContainer c)
+            => new StateMachineFactory(c);
 
         private static TowerHolderService CreateTowerHolderService(DIContainer c)
             => new TowerHolderService(c.Resolve<EntitiesLifeContext>());

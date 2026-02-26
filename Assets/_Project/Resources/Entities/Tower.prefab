@@ -10,11 +10,13 @@ GameObject:
   m_Component:
   - component: {fileID: 4633439145277671781}
   - component: {fileID: 6005610922140713872}
+  - component: {fileID: -2169007838644304975}
   - component: {fileID: -4444682765457130235}
   - component: {fileID: 7279798435204542184}
   - component: {fileID: 1662454490908815312}
   - component: {fileID: 2346500681478931499}
-  m_Layer: 0
+  - component: {fileID: -1833520006467462246}
+  m_Layer: 6
   m_Name: Tower
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -47,6 +49,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b0107be204405274a964e336b7d84723, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-2169007838644304975
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2427019264880282528}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 464d2970138dc4d4696fda35c57a4901, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &-4444682765457130235
@@ -101,7 +115,7 @@ CapsuleCollider:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 0
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
@@ -111,6 +125,33 @@ CapsuleCollider:
   m_Height: 3
   m_Direction: 1
   m_Center: {x: 0, y: 1.5, z: 0}
+--- !u!54 &-1833520006467462246
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2427019264880282528}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 126
+  m_CollisionDetection: 0
 --- !u!1 &2995904820547817778
 GameObject:
   m_ObjectHideFlags: 0

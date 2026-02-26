@@ -4,7 +4,7 @@ using Assets._Project.Develop.Runtime.Utilities.Reactive;
 using Assets._Project.Develop.Runtime.Utilities.StateMachineCore;
 using UnityEngine;
 
-namespace Assets._Project.Develop.Runtime.Gameplay.Features.AI.States
+namespace Assets._Project.Develop.Runtime.Gameplay.Features.AI.States.Movement
 {
     public class MovementToPointState : State, IUpdatableState
     {
@@ -31,19 +31,19 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.AI.States
         {
             base.Enter();
 
-            Debug.Log("Entered");
-
             foreach (Entity entity in _lifeContext.Entities)
-                if(entity.HasComponent<IsTower>())
+                if (entity.HasComponent<IsTower>())
                     _currentTargetPoint.Value = entity;
-
-            Debug.Log(_currentTargetPoint.Value != null);
         }
 
         public void Update(float deltaTime)
         {
-            if (_currentTargetPoint.Value == null)
+            if (_currentTargetPoint.Value.IsDead.Value)
+            {
+                _movementDirection.Value = Vector3.zero;
+                _rotationDirection.Value = Vector3.zero;
                 return;
+            }
 
             Vector3 direction = (_currentTargetPoint.Value.Transform.position - _transform.position).normalized;
 

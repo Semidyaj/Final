@@ -8,12 +8,10 @@ using UnityEngine;
 
 namespace Assets._Project.Develop.Runtime.Gameplay.Features.Attack.AOE
 {
-    public class AOESystem : IInitializableSystem, IUpdatableSystem, IDisposableSystem
+    public class AOESystem : IInitializableSystem, IDisposableSystem
     {
         private ReactiveVariable<float> _damage;
         private ReactiveVariable<float> _radius;
-        private ReactiveVariable<float> _delay;
-        private ReactiveVariable<float> _currentTime;
 
         private Buffer<Collider> _contacts;
         private Buffer<Entity> _contactsEntities;
@@ -22,11 +20,11 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.Attack.AOE
 
         private Transform _transform;
 
-        private ReactiveEvent _teleportationEndEvent;
+        private ReactiveEvent _attackRequest;
+        private ReactiveEvent _attackEvent;
+        private ReactiveVariable<bool> _isAttackEnded;
 
-        private bool _isTeleportationEnded;
-
-        private IDisposable _teleportationEndEventDisposable;
+        private IDisposable _attackRequestDisposable;
 
         private readonly CollidersRegistryService _collidersRegistryService;
 
@@ -39,8 +37,6 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.Attack.AOE
         {
             _damage = entity.AOEDamage;
             _radius = entity.AOERadius;
-            _delay = entity.AOEDelayBeforeTakeDamage;
-            _currentTime = entity.AOEDelayCurrentTimer;
 
             _contacts = entity.AOECollidersBuffer;
             _contactsEntities = entity.AOEEntitiesBuffer;
@@ -49,35 +45,25 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.Attack.AOE
 
             _transform = entity.Transform;
 
-            _teleportationEndEvent = entity.TeleportationEvent;
+            _attackRequest = entity.AOEAttackRequest;
+            _attackEvent = entity.AOEAttackEvent;
+            _isAttackEnded = entity.IsAOEAttackEnded;
 
-            _teleportationEndEventDisposable = _teleportationEndEvent.Subscribe(OnTeleportationEnded);
-        }
-
-        public void OnUpdate(float deltaTime)
-        {
-            if (_isTeleportationEnded == false)
-                return;
-
-            _currentTime.Value -= deltaTime;
-
-            if (_currentTime.Value <= 0)
-            {
-                AOEAttackProcess();
-
-                _isTeleportationEnded = false;
-            }
+            _attackRequestDisposable = _attackRequest.Subscribe(OnDealDamage);
         }
 
         public void OnDispose()
         {
-            _teleportationEndEventDisposable.Dispose();
+            _attackRequestDisposable.Dispose();
         }
 
-        private void OnTeleportationEnded()
+        private void OnDealDamage()
         {
-            _currentTime.Value = _delay.Value;
-            _isTeleportationEnded = true;
+            AOEAttackProcess();
+
+            _isAttackEnded.Value = true;
+
+            _attackEvent?.Invoke();
         }
 
         private void AOEAttackProcess()

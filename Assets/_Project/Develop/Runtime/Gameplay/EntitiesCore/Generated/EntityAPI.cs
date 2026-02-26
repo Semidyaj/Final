@@ -1484,6 +1484,78 @@ namespace Assets._Project.Develop.Runtime.Gameplay.EntitiesCore
 			return AddComponent(new Assets._Project.Develop.Runtime.Gameplay.Features.Attack.AOE.AOEEntitiesBuffer() {Value = value});
 		}
 
+		public Assets._Project.Develop.Runtime.Gameplay.Features.Attack.AOE.AOEAttackRequest AOEAttackRequestC => GetComponent<Assets._Project.Develop.Runtime.Gameplay.Features.Attack.AOE.AOEAttackRequest>();
+
+		public Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveEvent AOEAttackRequest => AOEAttackRequestC.Value;
+
+		public bool TryGetAOEAttackRequest(out Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveEvent value)
+		{
+			bool result = TryGetComponent(out Assets._Project.Develop.Runtime.Gameplay.Features.Attack.AOE.AOEAttackRequest component);
+			if(result)
+				value = component.Value;
+			else
+				value = default(Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveEvent);
+			return result;
+		}
+
+		public Assets._Project.Develop.Runtime.Gameplay.EntitiesCore.Entity AddAOEAttackRequest()
+		{
+			return AddComponent(new Assets._Project.Develop.Runtime.Gameplay.Features.Attack.AOE.AOEAttackRequest() {Value = new Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveEvent() });
+		}
+
+		public Assets._Project.Develop.Runtime.Gameplay.EntitiesCore.Entity AddAOEAttackRequest(Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveEvent value)
+		{
+			return AddComponent(new Assets._Project.Develop.Runtime.Gameplay.Features.Attack.AOE.AOEAttackRequest() {Value = value});
+		}
+
+		public Assets._Project.Develop.Runtime.Gameplay.Features.Attack.AOE.AOEAttackEvent AOEAttackEventC => GetComponent<Assets._Project.Develop.Runtime.Gameplay.Features.Attack.AOE.AOEAttackEvent>();
+
+		public Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveEvent AOEAttackEvent => AOEAttackEventC.Value;
+
+		public bool TryGetAOEAttackEvent(out Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveEvent value)
+		{
+			bool result = TryGetComponent(out Assets._Project.Develop.Runtime.Gameplay.Features.Attack.AOE.AOEAttackEvent component);
+			if(result)
+				value = component.Value;
+			else
+				value = default(Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveEvent);
+			return result;
+		}
+
+		public Assets._Project.Develop.Runtime.Gameplay.EntitiesCore.Entity AddAOEAttackEvent()
+		{
+			return AddComponent(new Assets._Project.Develop.Runtime.Gameplay.Features.Attack.AOE.AOEAttackEvent() {Value = new Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveEvent() });
+		}
+
+		public Assets._Project.Develop.Runtime.Gameplay.EntitiesCore.Entity AddAOEAttackEvent(Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveEvent value)
+		{
+			return AddComponent(new Assets._Project.Develop.Runtime.Gameplay.Features.Attack.AOE.AOEAttackEvent() {Value = value});
+		}
+
+		public Assets._Project.Develop.Runtime.Gameplay.Features.Attack.AOE.IsAOEAttackEnded IsAOEAttackEndedC => GetComponent<Assets._Project.Develop.Runtime.Gameplay.Features.Attack.AOE.IsAOEAttackEnded>();
+
+		public Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<System.Boolean> IsAOEAttackEnded => IsAOEAttackEndedC.Value;
+
+		public bool TryGetIsAOEAttackEnded(out Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<System.Boolean> value)
+		{
+			bool result = TryGetComponent(out Assets._Project.Develop.Runtime.Gameplay.Features.Attack.AOE.IsAOEAttackEnded component);
+			if(result)
+				value = component.Value;
+			else
+				value = default(Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<System.Boolean>);
+			return result;
+		}
+
+		public Assets._Project.Develop.Runtime.Gameplay.EntitiesCore.Entity AddIsAOEAttackEnded()
+		{
+			return AddComponent(new Assets._Project.Develop.Runtime.Gameplay.Features.Attack.AOE.IsAOEAttackEnded() {Value = new Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<System.Boolean>() });
+		}
+
+		public Assets._Project.Develop.Runtime.Gameplay.EntitiesCore.Entity AddIsAOEAttackEnded(Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<System.Boolean> value)
+		{
+			return AddComponent(new Assets._Project.Develop.Runtime.Gameplay.Features.Attack.AOE.IsAOEAttackEnded() {Value = value});
+		}
+
 		public Assets._Project.Develop.Runtime.Gameplay.Features.ApplyDamage.TakeDamageRequest TakeDamageRequestC => GetComponent<Assets._Project.Develop.Runtime.Gameplay.Features.ApplyDamage.TakeDamageRequest>();
 
 		public Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveEvent<System.Single> TakeDamageRequest => TakeDamageRequestC.Value;

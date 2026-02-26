@@ -1,10 +1,11 @@
 ﻿using Assets._Project.Develop.Runtime.Gameplay.EntitiesCore;
-using Assets._Project.Develop.Runtime.Gameplay.Features.MainHero;
+using Assets._Project.Develop.Runtime.Infrastructure.DI;
 using Assets._Project.Develop.Runtime.Utilities.Reactive;
+using System;
 
 namespace Assets._Project.Develop.Runtime.Gameplay.Features.Allies
 {
-    public class TowerHolderService
+    public class TowerHolderService : IInitializable, IDisposable
     {
         private readonly EntitiesLifeContext _entitiesLifeContext;
         private ReactiveEvent<Entity> _towerRegistred = new();
@@ -32,7 +33,7 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.Allies
 
         private void OnEntityAdded(Entity entity)
         {
-            if (entity.HasComponent<IsMainHero>())
+            if (entity.HasComponent<IsTower>())
             {
                 _entitiesLifeContext.Added -= OnEntityAdded;
                 _tower = entity;

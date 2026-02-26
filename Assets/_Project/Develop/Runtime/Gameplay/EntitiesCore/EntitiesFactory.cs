@@ -40,28 +40,32 @@ namespace Assets._Project.Develop.Runtime.Gameplay.EntitiesCore
         {
             Entity entity = CreateEmpty();
 
-            _monoEntitiesFactory.Create(entity, position, config.PrefabPath);
+            _monoEntitiesFactory.Create(entity, position, "Entities/Tower");
 
             entity
                 .AddMaxHealth(new ReactiveVariable<float>(levelConfig.MaxHealth))
                 .AddCurrentHealth(new ReactiveVariable<float>(levelConfig.MaxHealth))
                 .AddIsDead()
+                .AddInDeathProcess()
+                .AddDeathProcessInitialTime(new ReactiveVariable<float>(1))
+                .AddDeathProcessCurrentTime()
                 .AddTakeDamageRequest()
                 .AddTakeDamageEvent()
                 .AddContactsDetectingMask(UnityLayers.LayerMaskCharacters)
                 .AddContactCollidersBuffer(new Buffer<Collider>(64))
                 .AddContactEntitiesBuffer(new Buffer<Entity>(64))
-                .AddIsTouchAnotherTeam()
+                //.AddIsTouchAnotherTeam()
                 .AddTeam(new ReactiveVariable<Teams>(Teams.MainHero));
 
             ICompositeCondition mustDie = new CompositeCondition()
                 .Add(new FuncCondition(() => entity.CurrentHealth.Value <= 0));
 
             ICompositeCondition mustSelfRelease = new CompositeCondition()
-                .Add(new FuncCondition(() => entity.IsDead.Value));
+                .Add(new FuncCondition(() => entity.IsDead.Value))
+                .Add(new FuncCondition(() => entity.InDeathProcess.Value == false));
 
             ICompositeCondition canApplyDamage = new CompositeCondition()
-                .Add(new FuncCondition(() => entity.IsTouchAnotherTeam.Value))
+                //.Add(new FuncCondition(() => entity.IsTouchAnotherTeam.Value))
                 .Add(new FuncCondition(() => entity.IsDead.Value == false));
 
             entity
@@ -72,13 +76,77 @@ namespace Assets._Project.Develop.Runtime.Gameplay.EntitiesCore
             entity
                 .AddSystem(new BodyContactsDetectingSystem())
                 .AddSystem(new BodyContactsEntitiesFilterSystem(_colidersRegistryService))
-                .AddSystem(new AnotherTeamTouchDetectorSystem())
+                //.AddSystem(new AnotherTeamTouchDetectorSystem())
                 .AddSystem(new ApplyDamageSystem())
                 .AddSystem(new DeathSystem())
                 .AddSystem(new DisableCollidersOnDeathSystem())
+                .AddSystem(new DeathProcessTimerSystem())
                 .AddSystem(new SelfReleaseSystem(_entitiesLifeContext));
 
-            _entitiesLifeContext.Add(entity);
+            return entity;
+        }
+
+        public Entity CreateHeroTowerDefenderEntity(Vector3 position, HeroConfig config)
+        {
+            Entity entity = CreateEmpty();
+
+            _monoEntitiesFactory.Create(entity, position, "Entities/Hero");
+
+            entity
+                .AddMoveDirection()
+                .AddMoveSpeed(new ReactiveVariable<float>(config.MoveSpeed))
+                .AddIsMoving()
+                .AddRotationDirection()
+                .AddRotationSpeed(new ReactiveVariable<float>(config.RotationSpeed))
+                .AddMaxHealth(new ReactiveVariable<float>(config.MaxHealth))
+                .AddCurrentHealth(new ReactiveVariable<float>(config.MaxHealth))
+                .AddIsDead()
+                .AddInDeathProcess()
+                .AddDeathProcessInitialTime(new ReactiveVariable<float>(config.DeathProcessTime))
+                .AddDeathProcessCurrentTime()
+                .AddTakeDamageRequest()
+                .AddTakeDamageEvent()
+                .AddAOEAttackRequest()
+                .AddAOEAttackEvent()
+                .AddAOEDamage(new ReactiveVariable<float>(100))
+                .AddAOERadius(new ReactiveVariable<float>(5))
+                .AddAOETakeDamageMask(UnityLayers.LayerMaskCharacters)
+                .AddAOECollidersBuffer(new Buffer<Collider>(64))
+                .AddAOEEntitiesBuffer(new Buffer<Entity>(64))
+                .AddIsAOEAttackEnded();
+
+            ICompositeCondition canMove = new CompositeCondition()
+                .Add(new FuncCondition(() => entity.IsDead.Value == false));
+
+            ICompositeCondition canRotate = new CompositeCondition()
+                .Add(new FuncCondition(() => entity.IsDead.Value == false));
+
+            ICompositeCondition mustDie = new CompositeCondition()
+                .Add(new FuncCondition(() => entity.CurrentHealth.Value <= 0));
+
+            ICompositeCondition mustSelfRelease = new CompositeCondition()
+                .Add(new FuncCondition(() => entity.IsDead.Value))
+                .Add(new FuncCondition(() => entity.InDeathProcess.Value == false));
+
+            ICompositeCondition canApplyDamage = new CompositeCondition()
+                .Add(new FuncCondition(() => entity.IsDead.Value == false));
+
+            entity
+                .AddCanMove(canMove)
+                .AddCanRotate(canRotate)
+                .AddMustDie(mustDie)
+                .AddMustSelfRelease(mustSelfRelease)
+                .AddCanApplyDamage(canApplyDamage);
+
+            entity
+                .AddSystem(new RigidbodyMovementSystem())
+                .AddSystem(new RigidbodyRotationSystem())
+                .AddSystem(new AOESystem(_colidersRegistryService))
+                .AddSystem(new ApplyDamageSystem())
+                .AddSystem(new DeathSystem())
+                .AddSystem(new DisableCollidersOnDeathSystem())
+                .AddSystem(new DeathProcessTimerSystem())
+                .AddSystem(new SelfReleaseSystem(_entitiesLifeContext));
 
             return entity;
         }

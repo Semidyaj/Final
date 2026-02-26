@@ -1,4 +1,5 @@
 ﻿using Assets._Project.Develop.Runtime.Gameplay.EntitiesCore;
+using Assets._Project.Develop.Runtime.Gameplay.Features.AI.States;
 using Assets._Project.Develop.Runtime.Gameplay.Features.AI.TargetSelectors;
 using Assets._Project.Develop.Runtime.Infrastructure.DI;
 
@@ -22,7 +23,8 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.AI
         // MAIN HERO
         public StateMachineBrain CreateMainInputHeroBrain(Entity entity)
         {
-            AIStateMachine stateMachine = _stateMachineFactory.CreateMainInputHeroStateMachine(entity);
+            AIStateMachine stateMachine = _stateMachineFactory.CreateMainHeroMoveAndAttackStateMachine(entity);
+            //AIStateMachine stateMachine = _stateMachineFactory.CreateMainInputHeroStateMachine(entity);
 
             StateMachineBrain brain = new StateMachineBrain(stateMachine);
 
@@ -35,6 +37,22 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.AI
         {
             AIStateMachine rootStateMachine = _stateMachineFactory.CreateMainHeroStateMachine(entity, targetSelector);
             StateMachineBrain brain = new StateMachineBrain(rootStateMachine);
+
+            _brainsContext.SetFor(entity, brain);
+
+            return brain;
+        }
+
+        // ALLIES
+        public StateMachineBrain CreateTowerBrain(Entity entity)
+        {
+            EmptyState emptyState = new EmptyState();
+
+            AIStateMachine stateMachine = new AIStateMachine();
+
+            stateMachine.AddState(emptyState);
+
+            StateMachineBrain brain = new StateMachineBrain(stateMachine);
 
             _brainsContext.SetFor(entity, brain);
 

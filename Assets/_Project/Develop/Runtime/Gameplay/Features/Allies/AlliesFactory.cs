@@ -42,6 +42,8 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.Allies
                     entity = _entitiesFactory.CreateTower(position, towerConfig, towerDefenseLevelConfig);
                     entity.AddIsTower();
 
+                    _brainsFactory.CreateTowerBrain(entity);
+
                     break;
 
                 default:

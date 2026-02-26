@@ -1,5 +1,7 @@
 ﻿using Assets._Project.Develop.Runtime.Gameplay.EntitiesCore;
 using Assets._Project.Develop.Runtime.Gameplay.Features.AI.States;
+using Assets._Project.Develop.Runtime.Gameplay.Features.AI.States.Attack;
+using Assets._Project.Develop.Runtime.Gameplay.Features.AI.States.Movement;
 using Assets._Project.Develop.Runtime.Gameplay.Features.AI.States.Teleportation;
 using Assets._Project.Develop.Runtime.Gameplay.Features.AI.TargetSelectors;
 using Assets._Project.Develop.Runtime.Gameplay.Features.InputFeature;
@@ -31,6 +33,19 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.AI
         }
 
         // MAIN BEHAVIOUR
+        public AIStateMachine CreateMainHeroMoveAndAttackStateMachine(Entity entity)
+        {
+            AIStateMachine attackState = CreateInputExplosionAttackStateMachine(entity);
+            AIStateMachine movementState = CreateMainHeroMovementStateMachine(entity);
+
+            AIParallelState parallelState = new AIParallelState(attackState, movementState);
+
+            AIStateMachine rootStateMachine = new AIStateMachine();
+            rootStateMachine.AddState(parallelState);
+
+            return rootStateMachine;
+        }
+
         public AIStateMachine CreateMainHeroStateMachine(Entity entity, ITargetSelector targetSelector)
         {
             AIStateMachine combatState = CreateAutoAttackStateMachine(entity);
@@ -124,6 +139,34 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.AI
             return stateMachine;
         }
 
+        public AIStateMachine CreateInputExplosionAttackStateMachine(Entity entity)
+        {
+            List<IDisposable> disposables = new List<IDisposable>();
+
+            EmptyState emptyState = new EmptyState();
+            InputAttackTriggerState attackState = new InputAttackTriggerState(entity);
+
+            TimerService idleTimer = _timerServiceFactory.Create(1f);
+            disposables.Add(idleTimer);
+            disposables.Add(emptyState.Entered.Subscribe(idleTimer.Restart));
+
+            ICompositeCondition fromEmptyToAttackCondition = new CompositeCondition()
+                .Add(new FuncCondition(() => _inputService.IsMainActionPerformed))
+                .Add(new FuncCondition(() => idleTimer.IsOver));
+
+            FuncCondition fromAttackToEmptyCondition = new FuncCondition(() => entity.IsAOEAttackEnded.Value == true);
+
+            AIStateMachine stateMachine = new AIStateMachine();
+
+            stateMachine.AddState(emptyState);
+            stateMachine.AddState(attackState);
+
+            stateMachine.AddTransition(emptyState, attackState, fromEmptyToAttackCondition);
+            stateMachine.AddTransition(attackState, emptyState, fromAttackToEmptyCondition);
+
+            return stateMachine;
+        }
+
         // MOVEMENT
         public AIStateMachine CreateMovementToPointStateMachine(Entity entity)
         {
@@ -132,7 +175,7 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.AI
 
             FuncCondition fromEmptyToMovementStateCondition = new FuncCondition(() => entity.IsDead.Value == false);
 
-            FuncCondition fromMovementToEmptyStateCondition = new FuncCondition(() => entity.CurrentTarget.Value == null);
+            FuncCondition fromMovementToEmptyStateCondition = new FuncCondition(() => entity.CurrentTarget.Value.IsDead.Value);
 
             AIStateMachine stateMachine = new AIStateMachine();
 
@@ -141,6 +184,25 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.AI
 
             stateMachine.AddTransition(emptyState, movementState, fromEmptyToMovementStateCondition);
             stateMachine.AddTransition(movementState, emptyState, fromMovementToEmptyStateCondition);
+
+            return stateMachine;
+        }
+
+        public AIStateMachine CreateMainHeroMovementStateMachine(Entity entity)
+        {
+            EmptyState emptyState = new EmptyState();
+            PlayerInputMovementState movementState = new PlayerInputMovementState(entity, _inputService);
+
+            FuncCondition fromEmptyToMovementCondition = new FuncCondition(() => _inputService.Direction != Vector3.zero);
+            FuncCondition fromMovementToEmptyCondition = new FuncCondition(() => _inputService.Direction == Vector3.zero);
+
+            AIStateMachine stateMachine = new AIStateMachine();
+
+            stateMachine.AddState(emptyState);
+            stateMachine.AddState(movementState);
+
+            stateMachine.AddTransition(emptyState, movementState, fromEmptyToMovementCondition);
+            stateMachine.AddTransition(movementState, emptyState, fromMovementToEmptyCondition);
 
             return stateMachine;
         }

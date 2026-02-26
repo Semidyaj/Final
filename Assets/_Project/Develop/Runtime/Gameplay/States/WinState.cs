@@ -1,4 +1,6 @@
 ﻿using Assets._Project.Develop.Runtime.Gameplay.Features.InputFeature;
+using Assets._Project.Develop.Runtime.Gameplay.Features.ResultHandler;
+using Assets._Project.Develop.Runtime.Gameplay.Features.RewardsService;
 using Assets._Project.Develop.Runtime.Gameplay.Infrastructure;
 using Assets._Project.Develop.Runtime.Meta.Features.LevelsProgression;
 using Assets._Project.Develop.Runtime.Utilities.CoroutinesManager;
@@ -16,20 +18,26 @@ namespace Assets._Project.Develop.Runtime.Gameplay.States
         private readonly PlayerDataProvider _playerDataProvider;
         private readonly SceneSwitcherService _sceneSwitcherService;
         private readonly ICoroutinesPerformer _coroutinesPerformer;
+        private readonly GameplayResultHandler _gameplayResultHandler;
+        private readonly GameplayRewardsService _gameplayRewardsService;
 
         public WinState(
             IInputService inputService,
-            LevelsProgressionService levelsProgressionService, 
-            GameplayInputArgs gameplayInputArgs, 
-            PlayerDataProvider playerDataProvider, 
-            SceneSwitcherService sceneSwitcherService, 
-            ICoroutinesPerformer coroutinesPerformer) : base(inputService)
+            LevelsProgressionService levelsProgressionService,
+            GameplayInputArgs gameplayInputArgs,
+            PlayerDataProvider playerDataProvider,
+            SceneSwitcherService sceneSwitcherService,
+            ICoroutinesPerformer coroutinesPerformer,
+            GameplayResultHandler gameplayResultHandler,
+            GameplayRewardsService gameplayRewardsService) : base(inputService)
         {
             _levelsProgressionService = levelsProgressionService;
             _gameplayInputArgs = gameplayInputArgs;
             _playerDataProvider = playerDataProvider;
             _sceneSwitcherService = sceneSwitcherService;
             _coroutinesPerformer = coroutinesPerformer;
+            _gameplayResultHandler = gameplayResultHandler;
+            _gameplayRewardsService = gameplayRewardsService;
         }
 
         public override void Enter()
@@ -37,6 +45,9 @@ namespace Assets._Project.Develop.Runtime.Gameplay.States
             base.Enter();
 
             Debug.Log("WON");
+
+            _gameplayResultHandler.Apply(GameplayEndState.Victory);
+            _gameplayRewardsService.ApplyVictoryReward();
 
             _levelsProgressionService.AddLevelToCompleted(_gameplayInputArgs.LevelNumber);
 

@@ -1,5 +1,6 @@
 using Assets._Project.Develop.Runtime.Configs.Gameplay.Entities;
 using Assets._Project.Develop.Runtime.Configs.Gameplay.Levels;
+using Assets._Project.Develop.Runtime.Configs.Meta.Economy;
 using Assets._Project.Develop.Runtime.Configs.Meta.Wallet;
 using Assets._Project.Develop.Runtime.Utilities.AssetsManagment;
 using System;
@@ -16,9 +17,11 @@ namespace Assets._Project.Develop.Runtime.Utilities.ConfigsManagment
         private readonly Dictionary<Type, string> _configResourcesPaths = new()
         {
             {typeof(StartWalletConfig), "Configs/Meta/Wallet/StartWalletConfig" },
+            {typeof(GameplayEconomyConfig), "Configs/Meta/Economy/GameplayEconomyConfig" },
             {typeof(CurrencyIconsConfig), "Configs/Meta/Wallet/CurrencyIconsConfig" },
-            {typeof(LevelsListConfig), "Configs/Gameplay/Levels/LevelsListConfig" },
+            {typeof(LevelsListConfig), "Configs/Gameplay/Levels/TowerDefence/Levels/LevelsListConfig" },
             {typeof(HeroConfig), "Configs/Gameplay/Entities/Characters/HeroConfig" },
+            {typeof(TowerConfig), "Configs/Gameplay/Entities/Characters/TowerConfig" },
             {typeof(HomeworkHeroConfig), "Configs/Gameplay/Entities/Characters/HomeworkHeroConfig" },
         };
 

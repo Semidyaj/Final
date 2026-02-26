@@ -1551,6 +1551,13 @@ namespace Assets._Project.Develop.Runtime.Gameplay.EntitiesCore
 			return AddComponent(new Assets._Project.Develop.Runtime.Gameplay.Features.ApplyDamage.CanApplyDamage() {Value = value});
 		}
 
+		public Assets._Project.Develop.Runtime.Gameplay.Features.Allies.IsTower IsTowerC => GetComponent<Assets._Project.Develop.Runtime.Gameplay.Features.Allies.IsTower>();
+
+		public Assets._Project.Develop.Runtime.Gameplay.EntitiesCore.Entity AddIsTower()
+		{
+			return AddComponent(new Assets._Project.Develop.Runtime.Gameplay.Features.Allies.IsTower() );
+		}
+
 		public Assets._Project.Develop.Runtime.Gameplay.Features.AI.CurrentTarget CurrentTargetC => GetComponent<Assets._Project.Develop.Runtime.Gameplay.Features.AI.CurrentTarget>();
 
 		public Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<Assets._Project.Develop.Runtime.Gameplay.EntitiesCore.Entity> CurrentTarget => CurrentTargetC.Value;

@@ -2,6 +2,7 @@
 using Assets._Project.Develop.Runtime.Gameplay.Features.AI.States;
 using Assets._Project.Develop.Runtime.Gameplay.Features.AI.States.Teleportation;
 using Assets._Project.Develop.Runtime.Gameplay.Features.AI.TargetSelectors;
+using Assets._Project.Develop.Runtime.Gameplay.Features.Allies;
 using Assets._Project.Develop.Runtime.Gameplay.Features.InputFeature;
 using Assets._Project.Develop.Runtime.Infrastructure.DI;
 using Assets._Project.Develop.Runtime.Utilities.Conditions;
@@ -30,6 +31,38 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.AI
             _inputService = _container.Resolve<IInputService>();
             _entitiesLifeContext = _container.Resolve<EntitiesLifeContext>();
 
+        }
+
+        public StateMachineBrain CreateBarbarianBrain(Entity entity)
+        {
+            AIStateMachine stateMachine = CreateMovementToPointStateMachine(entity);
+            StateMachineBrain brain = new StateMachineBrain(stateMachine);
+
+            _brainsContext.SetFor(entity, brain);
+
+            return brain;
+        }
+
+        private AIStateMachine CreateMovementToPointStateMachine(Entity entity)
+        {
+            EmptyState emptyState = new EmptyState();
+            MovementToPointState movementState = new MovementToPointState(entity, _entitiesLifeContext);
+
+            ICompositeCondition fromEmptyToMovementStateCondition = new CompositeCondition()
+                .Add(new FuncCondition(() => entity.IsDead.Value == false));
+                //.Add(new FuncCondition(() => entity.CurrentTarget.Value != null));
+
+            FuncCondition fromMovementToEmptyStateCondition = new FuncCondition(() => entity.CurrentTarget.Value == null);
+
+            AIStateMachine stateMachine = new AIStateMachine();
+
+            stateMachine.AddState(emptyState);
+            stateMachine.AddState(movementState);
+
+            stateMachine.AddTransition(emptyState, movementState, fromEmptyToMovementStateCondition);
+            stateMachine.AddTransition(movementState, emptyState, fromMovementToEmptyStateCondition);
+
+            return stateMachine;
         }
 
         public StateMachineBrain CreateTeleportationToLeastHealthTargetBrain(Entity entity, ITargetSelector targetSelector)

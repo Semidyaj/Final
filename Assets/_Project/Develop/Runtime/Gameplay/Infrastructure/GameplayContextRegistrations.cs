@@ -2,12 +2,16 @@
 using Assets._Project.Develop.Runtime.Gameplay.EntitiesCore;
 using Assets._Project.Develop.Runtime.Gameplay.EntitiesCore.Mono;
 using Assets._Project.Develop.Runtime.Gameplay.Features.AI;
+using Assets._Project.Develop.Runtime.Gameplay.Features.Allies;
 using Assets._Project.Develop.Runtime.Gameplay.Features.Enemies;
 using Assets._Project.Develop.Runtime.Gameplay.Features.InputFeature;
 using Assets._Project.Develop.Runtime.Gameplay.Features.MainHero;
+using Assets._Project.Develop.Runtime.Gameplay.Features.ResultHandler;
+using Assets._Project.Develop.Runtime.Gameplay.Features.RewardsService;
 using Assets._Project.Develop.Runtime.Gameplay.Features.StagesFeature;
 using Assets._Project.Develop.Runtime.Gameplay.States;
 using Assets._Project.Develop.Runtime.Infrastructure.DI;
+using Assets._Project.Develop.Runtime.Meta.Features.StatisticsService;
 using Assets._Project.Develop.Runtime.Utilities.AssetsManagment;
 using Assets._Project.Develop.Runtime.Utilities.ConfigsManagment;
 
@@ -24,6 +28,8 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Infrastructure
             container.RegisterAsSingle(CreateMonoEntitiesFactory).NonLazy();
             container.RegisterAsSingle(CreateEntitiesFactory);
             container.RegisterAsSingle(CreateEntitiesLifeContext);
+
+            container.RegisterAsSingle(CreateAlliesFactory);
 
             container.RegisterAsSingle(CreateCollidersRegistryService);
 
@@ -43,7 +49,22 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Infrastructure
             container.RegisterAsSingle<IInputService>(CreateDesktopInput);
 
             container.RegisterAsSingle(CreateMainHeroHolderService).NonLazy();
+
+            container.RegisterAsSingle(CreateTowerHolderService).NonLazy();
+
+            container.RegisterAsSingle(CreateGameplayResultHandler).NonLazy();
         }
+
+        private static TowerHolderService CreateTowerHolderService(DIContainer c)
+            => new TowerHolderService(c.Resolve<EntitiesLifeContext>());
+
+        private static AlliesFactory CreateAlliesFactory(DIContainer c)
+            => new AlliesFactory(c);
+
+        private static GameplayResultHandler CreateGameplayResultHandler(DIContainer c)
+            => new GameplayResultHandler(
+            c.Resolve<GameplayRewardsService>(),
+            c.Resolve<GameplayStatisticsService>());
 
         private static GameplayStatesContext CreateGameplayStatesContext(DIContainer c)
             => new GameplayStatesContext(c.Resolve<GameplayStatesFactory>().CreateGameplayStateMachine(_inputArgs));
@@ -87,8 +108,8 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Infrastructure
 
         private static MonoEntitiesFactory CreateMonoEntitiesFactory(DIContainer c)
             => new MonoEntitiesFactory(
-                c.Resolve<ResourcesAssetsLoader>(), 
-                c.Resolve<EntitiesLifeContext>(), 
+                c.Resolve<ResourcesAssetsLoader>(),
+                c.Resolve<EntitiesLifeContext>(),
                 c.Resolve<CollidersRegistryService>());
 
         private static EntitiesLifeContext CreateEntitiesLifeContext(DIContainer c)

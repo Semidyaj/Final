@@ -1,5 +1,8 @@
-﻿using Assets._Project.Develop.Runtime.Gameplay.EntitiesCore;
+﻿using Assets._Project.Develop.Runtime.Configs.Gameplay.Entities;
+using Assets._Project.Develop.Runtime.Configs.Gameplay.Levels;
+using Assets._Project.Develop.Runtime.Gameplay.EntitiesCore;
 using Assets._Project.Develop.Runtime.Gameplay.Features.AI;
+using Assets._Project.Develop.Runtime.Gameplay.Features.Allies;
 using Assets._Project.Develop.Runtime.Gameplay.Features.MainHero;
 using Assets._Project.Develop.Runtime.Gameplay.States;
 using Assets._Project.Develop.Runtime.Infrastructure;
@@ -39,9 +42,11 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Infrastructure
 
         public override IEnumerator Initialize()
         {
-            //ConfigsProviderService configsProviderService = _container.Resolve<ConfigsProviderService>();
+            Debug.Log($"Starting level with {_inputArgs.LevelNumber}");
 
-            //yield return configsProviderService.LoadAsync();
+            ConfigsProviderService configsProviderService = _container.Resolve<ConfigsProviderService>();
+
+            yield return configsProviderService.LoadAsync();
 
             _entitiesLifeContext = _container.Resolve<EntitiesLifeContext>();
             _brainsContext = _container.Resolve<AIBrainsContext>();
@@ -49,7 +54,12 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Infrastructure
 
             _container.Resolve<MainHeroFactory>().Create(Vector3.zero);
 
-            yield break;
+            LevelConfig baseLevelConfig = configsProviderService.GetConfig<LevelsListConfig>().GetBy(_inputArgs.LevelNumber);
+            TowerDefenseLevelConfig levelConfig = baseLevelConfig as TowerDefenseLevelConfig;
+
+            TowerConfig towerConfig = _container.Resolve<ConfigsProviderService>().GetConfig<TowerConfig>();
+
+            _container.Resolve<AlliesFactory>().Create(levelConfig.Position, towerConfig, levelConfig);
         }
 
         public override void Run()

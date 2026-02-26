@@ -45,7 +45,7 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.StagesFeature
                 return;
 
             if (_spawnedEnemiesToRemoveReason.Count == 0)
-                PrecessEnd();
+                ProcessEnd();
         }
 
         public void Cleanup()
@@ -94,7 +94,7 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.StagesFeature
             _spawnedEnemiesToRemoveReason.Add(spawnedEnemy, removeReason);
         }
 
-        private void PrecessEnd()
+        private void ProcessEnd()
         {
             _inProcess = false;
             _completed?.Invoke();

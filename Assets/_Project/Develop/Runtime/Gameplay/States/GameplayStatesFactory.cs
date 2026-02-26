@@ -1,5 +1,8 @@
-﻿using Assets._Project.Develop.Runtime.Gameplay.Features.InputFeature;
+﻿using Assets._Project.Develop.Runtime.Gameplay.Features.Allies;
+using Assets._Project.Develop.Runtime.Gameplay.Features.InputFeature;
 using Assets._Project.Develop.Runtime.Gameplay.Features.MainHero;
+using Assets._Project.Develop.Runtime.Gameplay.Features.ResultHandler;
+using Assets._Project.Develop.Runtime.Gameplay.Features.RewardsService;
 using Assets._Project.Develop.Runtime.Gameplay.Features.StagesFeature;
 using Assets._Project.Develop.Runtime.Gameplay.Infrastructure;
 using Assets._Project.Develop.Runtime.Infrastructure.DI;
@@ -33,19 +36,23 @@ namespace Assets._Project.Develop.Runtime.Gameplay.States
                 inputArgs,
                 _container.Resolve<PlayerDataProvider>(),
                 _container.Resolve<SceneSwitcherService>(),
-                _container.Resolve<ICoroutinesPerformer>());
+                _container.Resolve<ICoroutinesPerformer>(),
+                _container.Resolve<GameplayResultHandler>(),
+                _container.Resolve<GameplayRewardsService>());
 
         public DefeatState CreateDefeatState()
             => new DefeatState(
                 _container.Resolve<IInputService>(),
                 _container.Resolve<SceneSwitcherService>(),
-                _container.Resolve<ICoroutinesPerformer>());
+                _container.Resolve<ICoroutinesPerformer>(),
+                _container.Resolve<GameplayResultHandler>());
 
         public GameplayStateMachine CreateGameplayStateMachine(GameplayInputArgs inputArgs)
         {
             PreperationTriggerService preperationTriggerService = _container.Resolve<PreperationTriggerService>();
             StageProviderService stageProviderService = _container.Resolve<StageProviderService>();
             MainHeroHolderService mainHeroHolderService = _container.Resolve<MainHeroHolderService>();
+            TowerHolderService towerHolderService = _container.Resolve<TowerHolderService>();
 
             GameplayStateMachine coreLoopState = CreateCoreLoopState();
 
@@ -57,11 +64,18 @@ namespace Assets._Project.Develop.Runtime.Gameplay.States
                 .Add(new FuncCondition(() => stageProviderService.CurrentStageResult.Value == StageResults.Completed))
                 .Add(new FuncCondition(() => stageProviderService.HasNextStage() == false));
 
-            ICompositeCondition coreLoopToDefeatStateCondition = new CompositeCondition()
+            ICompositeCondition coreLoopToDefeatStateCondition = new CompositeCondition(LogicOperations.Or)
                 .Add(new FuncCondition(() =>
                 {
                     if (mainHeroHolderService.MainHero != null)
                         return mainHeroHolderService.MainHero.IsDead.Value;
+
+                    return false;
+                }))
+                .Add(new FuncCondition(() =>
+                {
+                    if (towerHolderService.Tower != null)
+                        return towerHolderService.Tower.IsDead.Value;
 
                     return false;
                 }));

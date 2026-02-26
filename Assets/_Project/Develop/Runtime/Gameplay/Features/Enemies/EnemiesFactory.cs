@@ -37,6 +37,11 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.Enemies
                     _brainsFactory.CreateGhostBrain(entity);
                     break;
 
+                case BarbarianConfig barbarianConfig:
+                    entity = _entitiesFactory.CreateBarbarian(position, barbarianConfig);
+                    _brainsFactory.CreateBarbarianBrain(entity);
+                    break;
+
                 default:
                     throw new ArgumentException($"Not support {config.GetType()} type config");
             }

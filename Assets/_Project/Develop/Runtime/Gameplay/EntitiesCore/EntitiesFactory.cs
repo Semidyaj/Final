@@ -4,9 +4,11 @@ using Assets._Project.Develop.Runtime.Gameplay.EntitiesCore.Mono;
 using Assets._Project.Develop.Runtime.Gameplay.Features.ApplyDamage;
 using Assets._Project.Develop.Runtime.Gameplay.Features.Attack;
 using Assets._Project.Develop.Runtime.Gameplay.Features.Attack.AOE;
+using Assets._Project.Develop.Runtime.Gameplay.Features.Attack.PointClickExplosion;
 using Assets._Project.Develop.Runtime.Gameplay.Features.Attack.Shoot;
 using Assets._Project.Develop.Runtime.Gameplay.Features.ContactTakeDamage;
 using Assets._Project.Develop.Runtime.Gameplay.Features.Energy;
+using Assets._Project.Develop.Runtime.Gameplay.Features.InputFeature;
 using Assets._Project.Develop.Runtime.Gameplay.Features.LifeCycle;
 using Assets._Project.Develop.Runtime.Gameplay.Features.MovementFeature;
 using Assets._Project.Develop.Runtime.Gameplay.Features.Sensors;
@@ -26,6 +28,8 @@ namespace Assets._Project.Develop.Runtime.Gameplay.EntitiesCore
         private readonly EntitiesLifeContext _entitiesLifeContext;
         private readonly CollidersRegistryService _colidersRegistryService;
 
+        private readonly IInputService _inputService;
+
         private readonly MonoEntitiesFactory _monoEntitiesFactory;
 
         public EntitiesFactory(DIContainer container)
@@ -33,6 +37,9 @@ namespace Assets._Project.Develop.Runtime.Gameplay.EntitiesCore
             _container = container;
             _entitiesLifeContext = _container.Resolve<EntitiesLifeContext>();
             _colidersRegistryService = _container.Resolve<CollidersRegistryService>();
+
+            _inputService = _container.Resolve<IInputService>();
+
             _monoEntitiesFactory = _container.Resolve<MonoEntitiesFactory>();
         }
 
@@ -108,12 +115,17 @@ namespace Assets._Project.Develop.Runtime.Gameplay.EntitiesCore
                 .AddTakeDamageEvent()
                 .AddAOEAttackRequest()
                 .AddAOEAttackEvent()
+                .AddAOEAttackTargetPoint()
                 .AddAOEDamage(new ReactiveVariable<float>(100))
                 .AddAOERadius(new ReactiveVariable<float>(5))
                 .AddAOETakeDamageMask(UnityLayers.LayerMaskCharacters)
                 .AddAOECollidersBuffer(new Buffer<Collider>(64))
                 .AddAOEEntitiesBuffer(new Buffer<Entity>(64))
-                .AddIsAOEAttackEnded();
+                .AddIsAOEAttackEnded()
+                .AddInputMouseClickGroundPosition()
+                .AddInputFindMouseClickPositionRequest()
+                .AddInputMouseClickPositionFindedEvent()
+                .AddInputIsPositionFound();
 
             ICompositeCondition canMove = new CompositeCondition()
                 .Add(new FuncCondition(() => entity.IsDead.Value == false));
@@ -141,6 +153,8 @@ namespace Assets._Project.Develop.Runtime.Gameplay.EntitiesCore
             entity
                 .AddSystem(new RigidbodyMovementSystem())
                 .AddSystem(new RigidbodyRotationSystem())
+                .AddSystem(new RaycastGroundPointFinder(UnityLayers.LayerGround))
+                .AddSystem(new PointClickExplosionSystem())
                 .AddSystem(new AOESystem(_colidersRegistryService))
                 .AddSystem(new ApplyDamageSystem())
                 .AddSystem(new DeathSystem())

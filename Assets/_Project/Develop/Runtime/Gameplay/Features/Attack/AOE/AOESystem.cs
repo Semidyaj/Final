@@ -13,14 +13,16 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.Attack.AOE
         private ReactiveVariable<float> _damage;
         private ReactiveVariable<float> _radius;
 
+        private Entity _sourceEntity;
+
         private Buffer<Collider> _contacts;
         private Buffer<Entity> _contactsEntities;
         private LayerMask _damageMask;
         private CapsuleCollider _body;
 
-        private Transform _transform;
+        private ReactiveVariable<Vector3> _explodePoint;
 
-        private ReactiveEvent _attackRequest;
+        private ReactiveEvent<Vector3> _attackRequest;
         private ReactiveEvent _attackEvent;
         private ReactiveVariable<bool> _isAttackEnded;
 
@@ -35,6 +37,8 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.Attack.AOE
 
         public void OnInit(Entity entity)
         {
+            _sourceEntity = entity;
+
             _damage = entity.AOEDamage;
             _radius = entity.AOERadius;
 
@@ -43,7 +47,7 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.Attack.AOE
             _damageMask = entity.AOETakeDamageMask;
             _body = entity.BodyCollider;
 
-            _transform = entity.Transform;
+            _explodePoint = entity.AOEAttackTargetPoint;
 
             _attackRequest = entity.AOEAttackRequest;
             _attackEvent = entity.AOEAttackEvent;
@@ -57,8 +61,12 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.Attack.AOE
             _attackRequestDisposable.Dispose();
         }
 
-        private void OnDealDamage()
+        private void OnDealDamage(Vector3 position)
         {
+            _isAttackEnded.Value = false;
+
+            _explodePoint.Value = position;
+
             AOEAttackProcess();
 
             _isAttackEnded.Value = true;
@@ -71,14 +79,14 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.Attack.AOE
             GetAOEAttackContacts();
 
             for (int i = 0; i < _contactsEntities.Count; i++)
-                if (_contactsEntities.Items[i].HasComponent<TakeDamageRequest>())
+                if (_contactsEntities.Items[i].HasComponent<TakeDamageRequest>() && EntitiesHelper.IsSameTeam(_sourceEntity, _contactsEntities.Items[i]) == false)
                     _contactsEntities.Items[i].TakeDamageRequest.Invoke(_damage.Value);
         }
 
         private void GetAOEAttackContacts()
         {
             _contacts.Count = Physics.OverlapSphereNonAlloc(
-                _transform.position,
+                _explodePoint.Value,
                 _radius.Value,
                 _contacts.Items,
                 _damageMask,

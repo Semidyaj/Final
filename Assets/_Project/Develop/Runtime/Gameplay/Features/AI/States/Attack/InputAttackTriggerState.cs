@@ -6,12 +6,14 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.AI.States.Attack
 {
     public class InputAttackTriggerState : State, IUpdatableState
     {
-        private ReactiveEvent _attackRequest;
+        private ReactiveEvent _findPointToAttackRequest;
+
         private ReactiveVariable<bool> _isAttackEnded;
 
         public InputAttackTriggerState(Entity entity)
         {
-            _attackRequest = entity.AOEAttackRequest;
+            _findPointToAttackRequest = entity.InputFindMouseClickPositionRequest;
+
             _isAttackEnded = entity.IsAOEAttackEnded;
         }
 
@@ -21,7 +23,7 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.AI.States.Attack
 
             _isAttackEnded.Value = false;
 
-            _attackRequest?.Invoke();
+            _findPointToAttackRequest?.Invoke();
         }
 
         public void Update(float deltaTime)

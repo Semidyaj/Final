@@ -42,7 +42,7 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.Attack.AOE
 
     public class AOEAttackRequest : IEntityComponent
     {
-        public ReactiveEvent Value;
+        public ReactiveEvent<Vector3> Value;
     }
 
     public class AOEAttackEvent : IEntityComponent
@@ -53,5 +53,10 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.Attack.AOE
     public class IsAOEAttackEnded : IEntityComponent
     {
         public ReactiveVariable<bool> Value;
+    }
+
+    public class AOEAttackTargetPoint : IEntityComponent
+    {
+        public ReactiveVariable<Vector3> Value;
     }
 }

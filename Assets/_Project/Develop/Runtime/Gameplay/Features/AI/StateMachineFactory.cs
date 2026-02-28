@@ -152,9 +152,11 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.AI
 
             ICompositeCondition fromEmptyToAttackCondition = new CompositeCondition()
                 .Add(new FuncCondition(() => _inputService.IsMainActionPerformed))
-                .Add(new FuncCondition(() => idleTimer.IsOver));
+                .Add(new FuncCondition(() => idleTimer.IsOver || entity.InputIsPositionFound.Value == false));
 
-            FuncCondition fromAttackToEmptyCondition = new FuncCondition(() => entity.IsAOEAttackEnded.Value == true);
+            ICompositeCondition fromAttackToEmptyCondition = new CompositeCondition(LogicOperations.Or)
+                .Add(new FuncCondition(() => entity.IsAOEAttackEnded.Value))
+                .Add(new FuncCondition(() => entity.InputIsPositionFound.Value == false));
 
             AIStateMachine stateMachine = new AIStateMachine();
 

@@ -5,7 +5,9 @@ using Assets._Project.Develop.Runtime.Gameplay.Features.AI.States.Movement;
 using Assets._Project.Develop.Runtime.Gameplay.Features.AI.States.Teleportation;
 using Assets._Project.Develop.Runtime.Gameplay.Features.AI.TargetSelectors;
 using Assets._Project.Develop.Runtime.Gameplay.Features.InputFeature;
+using Assets._Project.Develop.Runtime.Gameplay.Features.StagesFeature;
 using Assets._Project.Develop.Runtime.Infrastructure.DI;
+using Assets._Project.Develop.Runtime.Meta.Features.Wallet;
 using Assets._Project.Develop.Runtime.Utilities.Conditions;
 using Assets._Project.Develop.Runtime.Utilities.Reactive;
 using Assets._Project.Develop.Runtime.Utilities.Timer;
@@ -22,6 +24,8 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.AI
         private readonly TimerServiceFactory _timerServiceFactory;
         private readonly EntitiesLifeContext _entitiesLifeContext;
         private readonly IInputService _inputService;
+        private readonly PreperationTriggerService _preperationTriggerService;
+        private readonly WalletService _walletService;
 
         public StateMachineFactory(DIContainer container)
         {
@@ -30,6 +34,8 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.AI
             _timerServiceFactory = _container.Resolve<TimerServiceFactory>();
             _entitiesLifeContext = _container.Resolve<EntitiesLifeContext>();
             _inputService = _container.Resolve<IInputService>();
+            _preperationTriggerService = _container.Resolve<PreperationTriggerService>();
+            _walletService = _container.Resolve<WalletService>();
         }
 
         // MAIN BEHAVIOUR
@@ -145,6 +151,7 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.AI
 
             EmptyState emptyState = new EmptyState();
             InputAttackTriggerState attackState = new InputAttackTriggerState(entity);
+            InputMiningState miningState = new InputMiningState(entity);
 
             TimerService idleTimer = _timerServiceFactory.Create(1f);
             disposables.Add(idleTimer);
@@ -152,19 +159,31 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.AI
 
             ICompositeCondition fromEmptyToAttackCondition = new CompositeCondition()
                 .Add(new FuncCondition(() => _inputService.IsMainActionPerformed))
+                .Add(new FuncCondition(() => _preperationTriggerService.IsPreparationState.Value == false))
                 .Add(new FuncCondition(() => idleTimer.IsOver || entity.InputIsPositionFound.Value == false));
+
+            ICompositeCondition fromEmptyToMiningCondition = new CompositeCondition()
+                .Add(new FuncCondition(() => _inputService.IsMainActionPerformed))
+                .Add(new FuncCondition(() => _walletService.Enough(CurrencyTypes.Gold, 20)))
+                .Add(new FuncCondition(() => _preperationTriggerService.IsPreparationState.Value));
 
             ICompositeCondition fromAttackToEmptyCondition = new CompositeCondition(LogicOperations.Or)
                 .Add(new FuncCondition(() => entity.IsAOEAttackEnded.Value))
                 .Add(new FuncCondition(() => entity.InputIsPositionFound.Value == false));
 
+            ICompositeCondition fromMiningToEmptyCondition = new CompositeCondition()
+                .Add(new FuncCondition(() => entity.MineIsPlaced.Value));
+
             AIStateMachine stateMachine = new AIStateMachine();
 
             stateMachine.AddState(emptyState);
             stateMachine.AddState(attackState);
+            stateMachine.AddState(miningState);
 
             stateMachine.AddTransition(emptyState, attackState, fromEmptyToAttackCondition);
             stateMachine.AddTransition(attackState, emptyState, fromAttackToEmptyCondition);
+            stateMachine.AddTransition(emptyState, miningState, fromEmptyToMiningCondition);
+            stateMachine.AddTransition(miningState, emptyState, fromMiningToEmptyCondition);
 
             return stateMachine;
         }

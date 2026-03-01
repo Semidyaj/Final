@@ -4,6 +4,7 @@ using Assets._Project.Develop.Runtime.Gameplay.EntitiesCore.Mono;
 using Assets._Project.Develop.Runtime.Gameplay.Features.ApplyDamage;
 using Assets._Project.Develop.Runtime.Gameplay.Features.Attack;
 using Assets._Project.Develop.Runtime.Gameplay.Features.Attack.AOE;
+using Assets._Project.Develop.Runtime.Gameplay.Features.Attack.Mining;
 using Assets._Project.Develop.Runtime.Gameplay.Features.Attack.PointClickExplosion;
 using Assets._Project.Develop.Runtime.Gameplay.Features.Attack.Shoot;
 using Assets._Project.Develop.Runtime.Gameplay.Features.ContactTakeDamage;
@@ -14,6 +15,7 @@ using Assets._Project.Develop.Runtime.Gameplay.Features.MovementFeature;
 using Assets._Project.Develop.Runtime.Gameplay.Features.Sensors;
 using Assets._Project.Develop.Runtime.Gameplay.Features.TeamsFeature;
 using Assets._Project.Develop.Runtime.Infrastructure.DI;
+using Assets._Project.Develop.Runtime.Meta.Features.Wallet;
 using Assets._Project.Develop.Runtime.Utilities;
 using Assets._Project.Develop.Runtime.Utilities.Conditions;
 using Assets._Project.Develop.Runtime.Utilities.LayersConstsGenerated;
@@ -29,6 +31,7 @@ namespace Assets._Project.Develop.Runtime.Gameplay.EntitiesCore
         private readonly CollidersRegistryService _colidersRegistryService;
 
         private readonly IInputService _inputService;
+        private readonly WalletService _walletService;
 
         private readonly MonoEntitiesFactory _monoEntitiesFactory;
 
@@ -39,6 +42,7 @@ namespace Assets._Project.Develop.Runtime.Gameplay.EntitiesCore
             _colidersRegistryService = _container.Resolve<CollidersRegistryService>();
 
             _inputService = _container.Resolve<IInputService>();
+            _walletService = _container.Resolve<WalletService>();
 
             _monoEntitiesFactory = _container.Resolve<MonoEntitiesFactory>();
         }
@@ -125,7 +129,8 @@ namespace Assets._Project.Develop.Runtime.Gameplay.EntitiesCore
                 .AddInputMouseClickGroundPosition()
                 .AddInputFindMouseClickPositionRequest()
                 .AddInputMouseClickPositionFindedEvent()
-                .AddInputIsPositionFound();
+                .AddInputIsPositionFound()
+                .AddMineIsPlaced();
 
             ICompositeCondition canMove = new CompositeCondition()
                 .Add(new FuncCondition(() => entity.IsDead.Value == false));
@@ -154,7 +159,8 @@ namespace Assets._Project.Develop.Runtime.Gameplay.EntitiesCore
                 .AddSystem(new RigidbodyMovementSystem())
                 .AddSystem(new RigidbodyRotationSystem())
                 .AddSystem(new RaycastGroundPointFinder(UnityLayers.LayerGround))
-                .AddSystem(new PointClickExplosionSystem())
+                //.AddSystem(new PointClickExplosionSystem())
+                .AddSystem(new PointClickMiningSystem(this, _walletService))
                 .AddSystem(new AOESystem(_colidersRegistryService))
                 .AddSystem(new ApplyDamageSystem())
                 .AddSystem(new DeathSystem())
@@ -510,6 +516,50 @@ namespace Assets._Project.Develop.Runtime.Gameplay.EntitiesCore
                 .AddSystem(new DealDamageOnContactSystem())
                 .AddSystem(new DeathMaskTouchDetectorSystem())
                 .AddSystem(new AnotherTeamTouchDetectorSystem())
+                .AddSystem(new DeathSystem())
+                .AddSystem(new DisableCollidersOnDeathSystem())
+                .AddSystem(new SelfReleaseSystem(_entitiesLifeContext));
+
+            _entitiesLifeContext.Add(entity);
+
+            return entity;
+        }
+
+        public Entity CreateMine(Vector3 position, Entity owner)
+        {
+            Entity entity = CreateEmpty();
+
+            _monoEntitiesFactory.Create(entity, position, "Entities/Mine");
+
+            entity
+                .AddIsDead()
+                .AddAOEAttackRequest()
+                .AddAOEAttackEvent()
+                .AddAOEAttackTargetPoint()
+                .AddIsAOEAttackEnded()
+                .AddAOECollidersBuffer(new Buffer<Collider>(64))
+                .AddAOEEntitiesBuffer(new Buffer<Entity>(64))
+                .AddMineDamage(new ReactiveVariable<float>(100))
+                .AddMineTriggerRadius(new ReactiveVariable<float>(1))
+                .AddMineCollidersBuffer(new Buffer<Collider>(64))
+                .AddMineEntitiesBuffer(new Buffer<Entity>(64))
+                .AddMineTakeDamageMask(UnityLayers.LayerMaskCharacters)
+                .AddMineIsExploded()
+                .AddTeam(new ReactiveVariable<Teams>(owner.Team.Value));
+
+            ICompositeCondition mustDie = new CompositeCondition()
+                .Add(new FuncCondition(() => entity.IsAOEAttackEnded.Value));
+
+            ICompositeCondition mustSelfRelease = new CompositeCondition()
+                .Add(new FuncCondition(() => entity.IsDead.Value));
+
+            entity
+                .AddMustDie(mustDie)
+                .AddMustSelfRelease(mustSelfRelease);
+
+            entity
+                .AddSystem(new MineExplosionSystem(_colidersRegistryService))
+                .AddSystem(new AOESystem(_colidersRegistryService))
                 .AddSystem(new DeathSystem())
                 .AddSystem(new DisableCollidersOnDeathSystem())
                 .AddSystem(new SelfReleaseSystem(_entitiesLifeContext));

@@ -1,11 +1,11 @@
 {
   "WalletData": {
-    "Gold": 320
+    "Gold": 420
   },
   "CompletedLevels": [
     1,
     2
   ],
-  "Wins": 3,
-  "Defeats": 0
+  "Wins": 4,
+  "Defeats": 1
 }

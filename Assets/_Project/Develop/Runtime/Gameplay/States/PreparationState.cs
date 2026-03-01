@@ -17,6 +17,8 @@ namespace Assets._Project.Develop.Runtime.Gameplay.States
         {
             base.Enter();
 
+            _triggerService.IsPreparationState.Value = true;
+
             Vector3 nextStageTriggerPosition = Vector3.zero + Vector3.forward * 2;
             _triggerService.Create(nextStageTriggerPosition);
         }
@@ -29,6 +31,8 @@ namespace Assets._Project.Develop.Runtime.Gameplay.States
         public override void Exit()
         {
             base.Exit();
+
+            _triggerService.IsPreparationState.Value = false;
 
             _triggerService.Cleanup();
         }

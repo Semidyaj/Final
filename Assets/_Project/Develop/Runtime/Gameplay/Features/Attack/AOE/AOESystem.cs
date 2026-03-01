@@ -10,19 +10,13 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.Attack.AOE
 {
     public class AOESystem : IInitializableSystem, IDisposableSystem
     {
-        private ReactiveVariable<float> _damage;
-        private ReactiveVariable<float> _radius;
-
         private Entity _sourceEntity;
 
         private Buffer<Collider> _contacts;
         private Buffer<Entity> _contactsEntities;
-        private LayerMask _damageMask;
         private CapsuleCollider _body;
 
-        private ReactiveVariable<Vector3> _explodePoint;
-
-        private ReactiveEvent<Vector3> _attackRequest;
+        private ReactiveEvent<AOEInfoStruct> _attackRequest;
         private ReactiveEvent _attackEvent;
         private ReactiveVariable<bool> _isAttackEnded;
 
@@ -39,15 +33,9 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.Attack.AOE
         {
             _sourceEntity = entity;
 
-            _damage = entity.AOEDamage;
-            _radius = entity.AOERadius;
-
             _contacts = entity.AOECollidersBuffer;
             _contactsEntities = entity.AOEEntitiesBuffer;
-            _damageMask = entity.AOETakeDamageMask;
             _body = entity.BodyCollider;
-
-            _explodePoint = entity.AOEAttackTargetPoint;
 
             _attackRequest = entity.AOEAttackRequest;
             _attackEvent = entity.AOEAttackEvent;
@@ -61,35 +49,33 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.Attack.AOE
             _attackRequestDisposable.Dispose();
         }
 
-        private void OnDealDamage(Vector3 position)
+        private void OnDealDamage(AOEInfoStruct explosionInfo)
         {
             _isAttackEnded.Value = false;
 
-            _explodePoint.Value = position;
-
-            AOEAttackProcess();
+            AOEAttackProcess(explosionInfo);
 
             _isAttackEnded.Value = true;
 
             _attackEvent?.Invoke();
         }
 
-        private void AOEAttackProcess()
+        private void AOEAttackProcess(AOEInfoStruct explosionInfo)
         {
-            GetAOEAttackContacts();
+            GetAOEAttackContacts(explosionInfo);
 
             for (int i = 0; i < _contactsEntities.Count; i++)
                 if (_contactsEntities.Items[i].HasComponent<TakeDamageRequest>() && EntitiesHelper.IsSameTeam(_sourceEntity, _contactsEntities.Items[i]) == false)
-                    _contactsEntities.Items[i].TakeDamageRequest.Invoke(_damage.Value);
+                    _contactsEntities.Items[i].TakeDamageRequest.Invoke(explosionInfo.Damage);
         }
 
-        private void GetAOEAttackContacts()
+        private void GetAOEAttackContacts(AOEInfoStruct explosionInfo)
         {
             _contacts.Count = Physics.OverlapSphereNonAlloc(
-                _explodePoint.Value,
-                _radius.Value,
+                explosionInfo.Position,
+                explosionInfo.Radius,
                 _contacts.Items,
-                _damageMask,
+                explosionInfo.DamageMask,
                 QueryTriggerInteraction.Ignore);
 
             RemoveSelfFromContacts();

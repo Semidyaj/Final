@@ -42,7 +42,7 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.Attack.AOE
 
     public class AOEAttackRequest : IEntityComponent
     {
-        public ReactiveEvent<Vector3> Value;
+        public ReactiveEvent<AOEInfoStruct> Value;
     }
 
     public class AOEAttackEvent : IEntityComponent

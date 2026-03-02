@@ -13,7 +13,6 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.StagesFeature
         private readonly EntitiesLifeContext _entitiesLifeContext;
 
         private ReactiveVariable<bool> _hasMainHeroContact = new();
-        private ReactiveVariable<bool> _isPreparationState = new();
 
         private Entity _nextStageTrigger;
         private Buffer<Entity> _nextStageTriggerContacts;
@@ -25,7 +24,6 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.StagesFeature
         }
 
         public IReadOnlyVariable<bool> HasMainHeroContacts => _hasMainHeroContact;
-        public ReactiveVariable<bool> IsPreparationState => _isPreparationState;
 
         public void Create(Vector3 position)
         {

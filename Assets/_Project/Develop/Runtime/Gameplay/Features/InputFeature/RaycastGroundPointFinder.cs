@@ -44,17 +44,22 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.InputFeature
         {
             _ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-            if (Physics.Raycast(_ray, out RaycastHit groundHit, 100f, _groundMask))
-            {
-                _clickPointPosition.Value = groundHit.point;
-                _isPositionFound.Value = true;
+            bool isPositionFound = false;
 
-                _positionFoundEvent?.Invoke();
-            }
-            else
+            if (Physics.Raycast(_ray, out RaycastHit groundHit, 100f))
             {
-                _isPositionFound.Value = false;
+                isPositionFound = (_groundMask.value & (1 << groundHit.collider.gameObject.layer)) != 0;
+
+                if (isPositionFound)
+                {
+                    _clickPointPosition.Value = groundHit.point;
+                    _positionFoundEvent?.Invoke();
+                }
             }
+
+            _isPositionFound.Value = isPositionFound;
+
+            Debug.Log(isPositionFound);
         }
     }
 }

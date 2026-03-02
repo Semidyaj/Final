@@ -1,4 +1,6 @@
 ﻿using Assets._Project.Develop.Runtime.Gameplay.Features.Allies;
+using Assets._Project.Develop.Runtime.Gameplay.Features.Attack.Mining;
+using Assets._Project.Develop.Runtime.Gameplay.Features.Attack.PointClickExplosion;
 using Assets._Project.Develop.Runtime.Gameplay.Features.InputFeature;
 using Assets._Project.Develop.Runtime.Gameplay.Features.MainHero;
 using Assets._Project.Develop.Runtime.Gameplay.Features.ResultHandler;
@@ -24,7 +26,10 @@ namespace Assets._Project.Develop.Runtime.Gameplay.States
         }
 
         public PreparationState CreatePreparationState()
-            => new PreparationState(_container.Resolve<PreperationTriggerService>());
+            => new PreparationState(
+                _container.Resolve<PreperationTriggerService>(),
+                _container.Resolve<PointClickMiningService>(),
+                _container.Resolve<PointClickExplosionService>());
 
         public StageProcessState CreateStageProcessState()
             => new StageProcessState(_container.Resolve<StageProviderService>());

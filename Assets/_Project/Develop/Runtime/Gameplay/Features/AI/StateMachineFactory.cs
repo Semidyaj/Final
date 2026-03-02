@@ -5,9 +5,7 @@ using Assets._Project.Develop.Runtime.Gameplay.Features.AI.States.Movement;
 using Assets._Project.Develop.Runtime.Gameplay.Features.AI.States.Teleportation;
 using Assets._Project.Develop.Runtime.Gameplay.Features.AI.TargetSelectors;
 using Assets._Project.Develop.Runtime.Gameplay.Features.InputFeature;
-using Assets._Project.Develop.Runtime.Gameplay.Features.StagesFeature;
 using Assets._Project.Develop.Runtime.Infrastructure.DI;
-using Assets._Project.Develop.Runtime.Meta.Features.Wallet;
 using Assets._Project.Develop.Runtime.Utilities.Conditions;
 using Assets._Project.Develop.Runtime.Utilities.Reactive;
 using Assets._Project.Develop.Runtime.Utilities.Timer;
@@ -24,8 +22,6 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.AI
         private readonly TimerServiceFactory _timerServiceFactory;
         private readonly EntitiesLifeContext _entitiesLifeContext;
         private readonly IInputService _inputService;
-        private readonly PreperationTriggerService _preperationTriggerService;
-        private readonly WalletService _walletService;
 
         public StateMachineFactory(DIContainer container)
         {
@@ -34,17 +30,15 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.AI
             _timerServiceFactory = _container.Resolve<TimerServiceFactory>();
             _entitiesLifeContext = _container.Resolve<EntitiesLifeContext>();
             _inputService = _container.Resolve<IInputService>();
-            _preperationTriggerService = _container.Resolve<PreperationTriggerService>();
-            _walletService = _container.Resolve<WalletService>();
         }
 
         // MAIN BEHAVIOUR
         public AIStateMachine CreateMainHeroMoveAndAttackStateMachine(Entity entity)
         {
-            AIStateMachine attackState = CreateInputExplosionAttackStateMachine(entity);
+            AIStateMachine mainActionState = CreateInputMainActionStateMachine(entity);
             AIStateMachine movementState = CreateMainHeroMovementStateMachine(entity);
 
-            AIParallelState parallelState = new AIParallelState(attackState, movementState);
+            AIParallelState parallelState = new AIParallelState(mainActionState, movementState);
 
             AIStateMachine rootStateMachine = new AIStateMachine();
             rootStateMachine.AddState(parallelState);
@@ -145,45 +139,34 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.AI
             return stateMachine;
         }
 
-        public AIStateMachine CreateInputExplosionAttackStateMachine(Entity entity)
+        public AIStateMachine CreateInputMainActionStateMachine(Entity entity)
         {
             List<IDisposable> disposables = new List<IDisposable>();
 
             EmptyState emptyState = new EmptyState();
-            InputAttackTriggerState attackState = new InputAttackTriggerState(entity);
-            InputMiningState miningState = new InputMiningState(entity);
+            InputMainActionState mainActionState = new InputMainActionState(entity);
 
             TimerService idleTimer = _timerServiceFactory.Create(1f);
             disposables.Add(idleTimer);
             disposables.Add(emptyState.Entered.Subscribe(idleTimer.Restart));
 
-            ICompositeCondition fromEmptyToAttackCondition = new CompositeCondition()
+            ICompositeCondition fromEmptyToMainActionCondition = new CompositeCondition()
                 .Add(new FuncCondition(() => _inputService.IsMainActionPerformed))
-                .Add(new FuncCondition(() => _preperationTriggerService.IsPreparationState.Value == false))
                 .Add(new FuncCondition(() => idleTimer.IsOver || entity.InputIsPositionFound.Value == false));
 
-            ICompositeCondition fromEmptyToMiningCondition = new CompositeCondition()
-                .Add(new FuncCondition(() => _inputService.IsMainActionPerformed))
-                .Add(new FuncCondition(() => _walletService.Enough(CurrencyTypes.Gold, 20)))
-                .Add(new FuncCondition(() => _preperationTriggerService.IsPreparationState.Value));
-
-            ICompositeCondition fromAttackToEmptyCondition = new CompositeCondition(LogicOperations.Or)
+            ICompositeCondition fromMainActionToEmptyCondition = new CompositeCondition(LogicOperations.Or)
                 .Add(new FuncCondition(() => entity.IsAOEAttackEnded.Value))
+                .Add(new FuncCondition(() => entity.MineIsPlaced.Value))
+                .Add(new FuncCondition(() => entity.MineIsEnoughGold.Value == false))
                 .Add(new FuncCondition(() => entity.InputIsPositionFound.Value == false));
-
-            ICompositeCondition fromMiningToEmptyCondition = new CompositeCondition()
-                .Add(new FuncCondition(() => entity.MineIsPlaced.Value));
 
             AIStateMachine stateMachine = new AIStateMachine();
 
             stateMachine.AddState(emptyState);
-            stateMachine.AddState(attackState);
-            stateMachine.AddState(miningState);
+            stateMachine.AddState(mainActionState);
 
-            stateMachine.AddTransition(emptyState, attackState, fromEmptyToAttackCondition);
-            stateMachine.AddTransition(attackState, emptyState, fromAttackToEmptyCondition);
-            stateMachine.AddTransition(emptyState, miningState, fromEmptyToMiningCondition);
-            stateMachine.AddTransition(miningState, emptyState, fromMiningToEmptyCondition);
+            stateMachine.AddTransition(emptyState, mainActionState, fromEmptyToMainActionCondition);
+            stateMachine.AddTransition(mainActionState, emptyState, fromMainActionToEmptyCondition);
 
             return stateMachine;
         }

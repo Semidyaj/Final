@@ -1427,6 +1427,25 @@ namespace Assets._Project.Develop.Runtime.Gameplay.EntitiesCore
 			return AddComponent(new Assets._Project.Develop.Runtime.Gameplay.Features.Attack.InAttackCooldown() {Value = value});
 		}
 
+		public Assets._Project.Develop.Runtime.Gameplay.Features.Attack.PointClickExplosion.CanExplode CanExplodeC => GetComponent<Assets._Project.Develop.Runtime.Gameplay.Features.Attack.PointClickExplosion.CanExplode>();
+
+		public Assets._Project.Develop.Runtime.Utilities.Conditions.ICompositeCondition CanExplode => CanExplodeC.Value;
+
+		public bool TryGetCanExplode(out Assets._Project.Develop.Runtime.Utilities.Conditions.ICompositeCondition value)
+		{
+			bool result = TryGetComponent(out Assets._Project.Develop.Runtime.Gameplay.Features.Attack.PointClickExplosion.CanExplode component);
+			if(result)
+				value = component.Value;
+			else
+				value = default(Assets._Project.Develop.Runtime.Utilities.Conditions.ICompositeCondition);
+			return result;
+		}
+
+		public Assets._Project.Develop.Runtime.Gameplay.EntitiesCore.Entity AddCanExplode(Assets._Project.Develop.Runtime.Utilities.Conditions.ICompositeCondition value)
+		{
+			return AddComponent(new Assets._Project.Develop.Runtime.Gameplay.Features.Attack.PointClickExplosion.CanExplode() {Value = value});
+		}
+
 		public Assets._Project.Develop.Runtime.Gameplay.Features.Attack.Mining.MineDamage MineDamageC => GetComponent<Assets._Project.Develop.Runtime.Gameplay.Features.Attack.Mining.MineDamage>();
 
 		public Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<System.Single> MineDamage => MineDamageC.Value;
@@ -1578,6 +1597,49 @@ namespace Assets._Project.Develop.Runtime.Gameplay.EntitiesCore
 		public Assets._Project.Develop.Runtime.Gameplay.EntitiesCore.Entity AddMineIsExploded(Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<System.Boolean> value)
 		{
 			return AddComponent(new Assets._Project.Develop.Runtime.Gameplay.Features.Attack.Mining.MineIsExploded() {Value = value});
+		}
+
+		public Assets._Project.Develop.Runtime.Gameplay.Features.Attack.Mining.MineIsEnoughGold MineIsEnoughGoldC => GetComponent<Assets._Project.Develop.Runtime.Gameplay.Features.Attack.Mining.MineIsEnoughGold>();
+
+		public Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<System.Boolean> MineIsEnoughGold => MineIsEnoughGoldC.Value;
+
+		public bool TryGetMineIsEnoughGold(out Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<System.Boolean> value)
+		{
+			bool result = TryGetComponent(out Assets._Project.Develop.Runtime.Gameplay.Features.Attack.Mining.MineIsEnoughGold component);
+			if(result)
+				value = component.Value;
+			else
+				value = default(Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<System.Boolean>);
+			return result;
+		}
+
+		public Assets._Project.Develop.Runtime.Gameplay.EntitiesCore.Entity AddMineIsEnoughGold()
+		{
+			return AddComponent(new Assets._Project.Develop.Runtime.Gameplay.Features.Attack.Mining.MineIsEnoughGold() {Value = new Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<System.Boolean>() });
+		}
+
+		public Assets._Project.Develop.Runtime.Gameplay.EntitiesCore.Entity AddMineIsEnoughGold(Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveVariable<System.Boolean> value)
+		{
+			return AddComponent(new Assets._Project.Develop.Runtime.Gameplay.Features.Attack.Mining.MineIsEnoughGold() {Value = value});
+		}
+
+		public Assets._Project.Develop.Runtime.Gameplay.Features.Attack.Mining.CanMining CanMiningC => GetComponent<Assets._Project.Develop.Runtime.Gameplay.Features.Attack.Mining.CanMining>();
+
+		public Assets._Project.Develop.Runtime.Utilities.Conditions.ICompositeCondition CanMining => CanMiningC.Value;
+
+		public bool TryGetCanMining(out Assets._Project.Develop.Runtime.Utilities.Conditions.ICompositeCondition value)
+		{
+			bool result = TryGetComponent(out Assets._Project.Develop.Runtime.Gameplay.Features.Attack.Mining.CanMining component);
+			if(result)
+				value = component.Value;
+			else
+				value = default(Assets._Project.Develop.Runtime.Utilities.Conditions.ICompositeCondition);
+			return result;
+		}
+
+		public Assets._Project.Develop.Runtime.Gameplay.EntitiesCore.Entity AddCanMining(Assets._Project.Develop.Runtime.Utilities.Conditions.ICompositeCondition value)
+		{
+			return AddComponent(new Assets._Project.Develop.Runtime.Gameplay.Features.Attack.Mining.CanMining() {Value = value});
 		}
 
 		public Assets._Project.Develop.Runtime.Gameplay.Features.Attack.AOE.AOEDamage AOEDamageC => GetComponent<Assets._Project.Develop.Runtime.Gameplay.Features.Attack.AOE.AOEDamage>();

@@ -4,17 +4,19 @@ using Assets._Project.Develop.Runtime.Utilities.StateMachineCore;
 
 namespace Assets._Project.Develop.Runtime.Gameplay.Features.AI.States.Attack
 {
-    public class InputAttackTriggerState : State, IUpdatableState
+    public class InputMainActionState : State, IUpdatableState
     {
-        private ReactiveEvent _findPointToAttackRequest;
+        private ReactiveEvent _findPointToActionRequest;
 
         private ReactiveVariable<bool> _isAttackEnded;
+        private ReactiveVariable<bool> _isMinePlaced;
 
-        public InputAttackTriggerState(Entity entity)
+        public InputMainActionState(Entity entity)
         {
-            _findPointToAttackRequest = entity.InputFindMouseClickPositionRequest;
+            _findPointToActionRequest = entity.InputFindMouseClickPositionRequest;
 
             _isAttackEnded = entity.IsAOEAttackEnded;
+            _isMinePlaced = entity.MineIsPlaced;
         }
 
         public override void Enter()
@@ -22,8 +24,9 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.AI.States.Attack
             base.Enter();
 
             _isAttackEnded.Value = false;
+            _isMinePlaced.Value = false;
 
-            _findPointToAttackRequest?.Invoke();
+            _findPointToActionRequest?.Invoke();
         }
 
         public void Update(float deltaTime)

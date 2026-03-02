@@ -3,6 +3,8 @@ using Assets._Project.Develop.Runtime.Gameplay.EntitiesCore;
 using Assets._Project.Develop.Runtime.Gameplay.EntitiesCore.Mono;
 using Assets._Project.Develop.Runtime.Gameplay.Features.AI;
 using Assets._Project.Develop.Runtime.Gameplay.Features.Allies;
+using Assets._Project.Develop.Runtime.Gameplay.Features.Attack.Mining;
+using Assets._Project.Develop.Runtime.Gameplay.Features.Attack.PointClickExplosion;
 using Assets._Project.Develop.Runtime.Gameplay.Features.Enemies;
 using Assets._Project.Develop.Runtime.Gameplay.Features.InputFeature;
 using Assets._Project.Develop.Runtime.Gameplay.Features.MainHero;
@@ -12,6 +14,7 @@ using Assets._Project.Develop.Runtime.Gameplay.Features.StagesFeature;
 using Assets._Project.Develop.Runtime.Gameplay.States;
 using Assets._Project.Develop.Runtime.Infrastructure.DI;
 using Assets._Project.Develop.Runtime.Meta.Features.StatisticsService;
+using Assets._Project.Develop.Runtime.Meta.Features.Wallet;
 using Assets._Project.Develop.Runtime.Utilities.AssetsManagment;
 using Assets._Project.Develop.Runtime.Utilities.ConfigsManagment;
 
@@ -47,6 +50,9 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Infrastructure
             container.RegisterAsSingle(CreateGameplayStatesFactory);
             container.RegisterAsSingle(CreateGameplayStatesContext);
 
+            container.RegisterAsSingle(CreatePointClickMiningService);
+            container.RegisterAsSingle(CreatePointClickExplosionService);
+
             container.RegisterAsSingle<IInputService>(CreateDesktopInput);
 
             container.RegisterAsSingle(CreateMainHeroHolderService).NonLazy();
@@ -55,6 +61,12 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Infrastructure
 
             container.RegisterAsSingle(CreateGameplayResultHandler).NonLazy();
         }
+
+        private static PointClickExplosionService CreatePointClickExplosionService(DIContainer c)
+            => new PointClickExplosionService(c.Resolve<MainHeroHolderService>());
+
+        private static PointClickMiningService CreatePointClickMiningService(DIContainer c)
+            => new PointClickMiningService(c.Resolve<EntitiesFactory>(), c.Resolve<WalletService>(), c.Resolve<MainHeroHolderService>());
 
         private static StateMachineFactory CreateStateMachineFactory(DIContainer c)
             => new StateMachineFactory(c);

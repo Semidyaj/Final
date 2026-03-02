@@ -8,11 +8,13 @@ using Assets._Project.Develop.Runtime.Gameplay.Features.Attack.Mining;
 using Assets._Project.Develop.Runtime.Gameplay.Features.Attack.PointClickExplosion;
 using Assets._Project.Develop.Runtime.Gameplay.Features.Attack.Shoot;
 using Assets._Project.Develop.Runtime.Gameplay.Features.ContactTakeDamage;
+using Assets._Project.Develop.Runtime.Gameplay.Features.Enemies;
 using Assets._Project.Develop.Runtime.Gameplay.Features.Energy;
 using Assets._Project.Develop.Runtime.Gameplay.Features.InputFeature;
 using Assets._Project.Develop.Runtime.Gameplay.Features.LifeCycle;
 using Assets._Project.Develop.Runtime.Gameplay.Features.MovementFeature;
 using Assets._Project.Develop.Runtime.Gameplay.Features.Sensors;
+using Assets._Project.Develop.Runtime.Gameplay.Features.StagesFeature;
 using Assets._Project.Develop.Runtime.Gameplay.Features.TeamsFeature;
 using Assets._Project.Develop.Runtime.Infrastructure.DI;
 using Assets._Project.Develop.Runtime.Meta.Features.Wallet;
@@ -120,8 +122,8 @@ namespace Assets._Project.Develop.Runtime.Gameplay.EntitiesCore
                 .AddAOEAttackRequest()
                 .AddAOEAttackEvent()
                 .AddAOEAttackTargetPoint()
-                .AddAOEDamage(new ReactiveVariable<float>(100))
-                .AddAOERadius(new ReactiveVariable<float>(5))
+                .AddAOEDamage(new ReactiveVariable<float>(config.AOEAttackDamage))
+                .AddAOERadius(new ReactiveVariable<float>(config.AOEAttackRadius))
                 .AddAOETakeDamageMask(UnityLayers.LayerMaskCharacters)
                 .AddAOECollidersBuffer(new Buffer<Collider>(64))
                 .AddAOEEntitiesBuffer(new Buffer<Entity>(64))
@@ -130,12 +132,16 @@ namespace Assets._Project.Develop.Runtime.Gameplay.EntitiesCore
                 .AddInputFindMouseClickPositionRequest()
                 .AddInputMouseClickPositionFindedEvent()
                 .AddInputIsPositionFound()
-                .AddMineIsPlaced();
+                .AddMineIsPlaced()
+                .AddMineIsEnoughGold();
 
             ICompositeCondition canMove = new CompositeCondition()
                 .Add(new FuncCondition(() => entity.IsDead.Value == false));
 
             ICompositeCondition canRotate = new CompositeCondition()
+                .Add(new FuncCondition(() => entity.IsDead.Value == false));
+
+            ICompositeCondition canApplyDamage = new CompositeCondition()
                 .Add(new FuncCondition(() => entity.IsDead.Value == false));
 
             ICompositeCondition mustDie = new CompositeCondition()
@@ -145,22 +151,19 @@ namespace Assets._Project.Develop.Runtime.Gameplay.EntitiesCore
                 .Add(new FuncCondition(() => entity.IsDead.Value))
                 .Add(new FuncCondition(() => entity.InDeathProcess.Value == false));
 
-            ICompositeCondition canApplyDamage = new CompositeCondition()
-                .Add(new FuncCondition(() => entity.IsDead.Value == false));
+
 
             entity
                 .AddCanMove(canMove)
                 .AddCanRotate(canRotate)
+                .AddCanApplyDamage(canApplyDamage)
                 .AddMustDie(mustDie)
-                .AddMustSelfRelease(mustSelfRelease)
-                .AddCanApplyDamage(canApplyDamage);
+                .AddMustSelfRelease(mustSelfRelease);
 
             entity
                 .AddSystem(new RigidbodyMovementSystem())
                 .AddSystem(new RigidbodyRotationSystem())
-                .AddSystem(new RaycastGroundPointFinder(UnityLayers.LayerGround))
-                //.AddSystem(new PointClickExplosionSystem())
-                .AddSystem(new PointClickMiningSystem(this, _walletService))
+                .AddSystem(new RaycastGroundPointFinder(UnityLayers.LayerMaskGround))
                 .AddSystem(new AOESystem(_colidersRegistryService))
                 .AddSystem(new ApplyDamageSystem())
                 .AddSystem(new DeathSystem())
@@ -360,11 +363,16 @@ namespace Assets._Project.Develop.Runtime.Gameplay.EntitiesCore
                 .AddDeathProcessCurrentTime()
                 .AddTakeDamageRequest()
                 .AddTakeDamageEvent()
-                .AddContactsDetectingMask(UnityLayers.LayerMaskCharacters)
-                .AddContactCollidersBuffer(new Buffer<Collider>(64))
-                .AddContactEntitiesBuffer(new Buffer<Entity>(64))
-                .AddBodyContactDamage(new ReactiveVariable<float>(config.BodyContactDamage))
-                .AddCurrentTarget();
+                .AddCurrentTarget()
+                .AddAOEDamage(new ReactiveVariable<float>(config.Damage))
+                .AddAOERadius(new ReactiveVariable<float>(config.AttackRadius))
+                .AddAOETakeDamageMask(UnityLayers.LayerMaskCharacters)
+                .AddAOEAttackEvent()
+                .AddAOEAttackRequest()
+                .AddAOEAttackTargetPoint()
+                .AddAOECollidersBuffer(new Buffer<Collider>(64))
+                .AddAOEEntitiesBuffer(new Buffer<Entity>(64))
+                .AddIsAOEAttackEnded();
 
             ICompositeCondition canMove = new CompositeCondition()
                 .Add(new FuncCondition(() => entity.IsDead.Value == false));
@@ -372,15 +380,16 @@ namespace Assets._Project.Develop.Runtime.Gameplay.EntitiesCore
             ICompositeCondition canRotate = new CompositeCondition()
                 .Add(new FuncCondition(() => entity.IsDead.Value == false));
 
-            ICompositeCondition mustDie = new CompositeCondition()
+            ICompositeCondition canApplyDamage = new CompositeCondition()
+                .Add(new FuncCondition(() => entity.IsDead.Value == false));
+
+            ICompositeCondition mustDie = new CompositeCondition(LogicOperations.Or)
+                .Add(new FuncCondition(() => entity.IsAOEAttackEnded.Value))
                 .Add(new FuncCondition(() => entity.CurrentHealth.Value <= 0));
 
             ICompositeCondition mustSelfRelease = new CompositeCondition()
                 .Add(new FuncCondition(() => entity.IsDead.Value))
                 .Add(new FuncCondition(() => entity.InDeathProcess.Value == false));
-
-            ICompositeCondition canApplyDamage = new CompositeCondition()
-                .Add(new FuncCondition(() => entity.IsDead.Value == false));
 
             entity
                 .AddCanMove(canMove)
@@ -392,9 +401,8 @@ namespace Assets._Project.Develop.Runtime.Gameplay.EntitiesCore
             entity
                 .AddSystem(new RigidbodyMovementSystem())
                 .AddSystem(new RigidbodyRotationSystem())
-                .AddSystem(new BodyContactsDetectingSystem())
-                .AddSystem(new BodyContactsEntitiesFilterSystem(_colidersRegistryService))
-                .AddSystem(new DealDamageOnContactSystem())
+                .AddSystem(new MinDistanceExplosionDetectingSystem())
+                .AddSystem(new AOESystem(_colidersRegistryService))
                 .AddSystem(new ApplyDamageSystem())
                 .AddSystem(new DeathSystem())
                 .AddSystem(new DisableCollidersOnDeathSystem())

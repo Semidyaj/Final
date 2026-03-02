@@ -42,7 +42,7 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Infrastructure
 
         public override IEnumerator Initialize()
         {
-            Debug.Log($"Starting level with {_inputArgs.LevelNumber}");
+            Debug.Log($"Starting level number {_inputArgs.LevelNumber}");
 
             ConfigsProviderService configsProviderService = _container.Resolve<ConfigsProviderService>();
 
@@ -50,9 +50,10 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Infrastructure
 
             _entitiesLifeContext = _container.Resolve<EntitiesLifeContext>();
             _brainsContext = _container.Resolve<AIBrainsContext>();
-            _gameplayStatesContext = _container.Resolve<GameplayStatesContext>();
 
             _container.Resolve<MainHeroFactory>().Create(Vector3.zero);
+
+            _gameplayStatesContext = _container.Resolve<GameplayStatesContext>();
 
             LevelConfig baseLevelConfig = configsProviderService.GetConfig<LevelsListConfig>().GetBy(_inputArgs.LevelNumber);
             TowerDefenseLevelConfig levelConfig = baseLevelConfig as TowerDefenseLevelConfig;

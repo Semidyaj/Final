@@ -4,7 +4,7 @@ using Assets._Project.Develop.Runtime.Utilities.Reactive;
 using Assets._Project.Develop.Runtime.Utilities.StateMachineCore;
 using UnityEngine;
 
-namespace Assets._Project.Develop.Runtime.Gameplay.Features.AI.States
+namespace Assets._Project.Develop.Runtime.Gameplay.Features.AI.States.Movement
 {
     public class PlayerInputMovementState : State, IUpdatableState
     {

@@ -1,5 +1,6 @@
 ﻿using Assets._Project.Develop.Runtime.Gameplay.EntitiesCore;
 using Assets._Project.Develop.Runtime.Gameplay.EntitiesCore.Systems;
+using Assets._Project.Develop.Runtime.Gameplay.Features.LifeCycle;
 using Assets._Project.Develop.Runtime.Utilities.Conditions;
 using Assets._Project.Develop.Runtime.Utilities.Reactive;
 using System;
@@ -13,10 +14,13 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.ApplyDamage
         private ReactiveEvent<float> _damageEvent;
 
         private ReactiveVariable<float> _health;
+        private ReactiveVariable<float> _maxHealth;
 
         private ICompositeCondition _canApplyDamage;
 
         private IDisposable _requestDisposable;
+
+        private Entity _entity;
 
 
         public void OnInit(Entity entity)
@@ -25,6 +29,9 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.ApplyDamage
             _damageEvent = entity.TakeDamageEvent;
 
             _health = entity.CurrentHealth;
+            _maxHealth = entity.MaxHealth;
+
+            _entity = entity;
 
             _canApplyDamage = entity.CanApplyDamage;
 
@@ -48,7 +55,7 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.ApplyDamage
 
             _damageEvent.Invoke(damage);
 
-            Debug.Log("Damage taken!");
+            Debug.Log($"{_entity}: Damage taken! Current health: {_health.Value}/{_maxHealth.Value}");
         }
     }
 }

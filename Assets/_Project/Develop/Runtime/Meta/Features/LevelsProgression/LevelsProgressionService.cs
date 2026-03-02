@@ -16,6 +16,8 @@ namespace Assets._Project.Develop.Runtime.Meta.Features.LevelsProgression
             playerDataProvider.RegisterWriter(this);
         }
 
+        public IReadOnlyList<int> CompletedLevels => _completedLevels;
+
         public bool IsLevelCompleted(int levelNumber) => _completedLevels.Contains(levelNumber);
 
         public void AddLevelToCompleted(int levelNumber)

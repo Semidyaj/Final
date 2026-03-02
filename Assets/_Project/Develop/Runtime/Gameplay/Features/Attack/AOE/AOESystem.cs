@@ -8,25 +8,19 @@ using UnityEngine;
 
 namespace Assets._Project.Develop.Runtime.Gameplay.Features.Attack.AOE
 {
-    public class AOESystem : IInitializableSystem, IUpdatableSystem, IDisposableSystem
+    public class AOESystem : IInitializableSystem, IDisposableSystem
     {
-        private ReactiveVariable<float> _damage;
-        private ReactiveVariable<float> _radius;
-        private ReactiveVariable<float> _delay;
-        private ReactiveVariable<float> _currentTime;
+        private Entity _sourceEntity;
 
         private Buffer<Collider> _contacts;
         private Buffer<Entity> _contactsEntities;
-        private LayerMask _damageMask;
         private CapsuleCollider _body;
 
-        private Transform _transform;
+        private ReactiveEvent<AOEInfoStruct> _attackRequest;
+        private ReactiveEvent _attackEvent;
+        private ReactiveVariable<bool> _isAttackEnded;
 
-        private ReactiveEvent _teleportationEndEvent;
-
-        private bool _isTeleportationEnded;
-
-        private IDisposable _teleportationEndEventDisposable;
+        private IDisposable _attackRequestDisposable;
 
         private readonly CollidersRegistryService _collidersRegistryService;
 
@@ -37,65 +31,53 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.Attack.AOE
 
         public void OnInit(Entity entity)
         {
-            _damage = entity.AOEDamage;
-            _radius = entity.AOERadius;
-            _delay = entity.AOEDelayBeforeTakeDamage;
-            _currentTime = entity.AOEDelayCurrentTimer;
+            _sourceEntity = entity;
 
             _contacts = entity.AOECollidersBuffer;
             _contactsEntities = entity.AOEEntitiesBuffer;
-            _damageMask = entity.AOETakeDamageMask;
             _body = entity.BodyCollider;
 
-            _transform = entity.Transform;
+            _attackRequest = entity.AOEAttackRequest;
+            _attackEvent = entity.AOEAttackEvent;
+            _isAttackEnded = entity.IsAOEAttackEnded;
 
-            _teleportationEndEvent = entity.TeleportationEvent;
-
-            _teleportationEndEventDisposable = _teleportationEndEvent.Subscribe(OnTeleportationEnded);
-        }
-
-        public void OnUpdate(float deltaTime)
-        {
-            if (_isTeleportationEnded == false)
-                return;
-
-            _currentTime.Value -= deltaTime;
-
-            if (_currentTime.Value <= 0)
-            {
-                AOEAttackProcess();
-
-                _isTeleportationEnded = false;
-            }
+            _attackRequestDisposable = _attackRequest.Subscribe(OnDealDamage);
         }
 
         public void OnDispose()
         {
-            _teleportationEndEventDisposable.Dispose();
+            _attackRequestDisposable.Dispose();
         }
 
-        private void OnTeleportationEnded()
+        private void OnDealDamage(AOEInfoStruct explosionInfo)
         {
-            _currentTime.Value = _delay.Value;
-            _isTeleportationEnded = true;
+            _isAttackEnded.Value = false;
+
+            AOEAttackProcess(explosionInfo);
+
+            _isAttackEnded.Value = true;
+
+            _attackEvent?.Invoke();
         }
 
-        private void AOEAttackProcess()
+        private void AOEAttackProcess(AOEInfoStruct explosionInfo)
         {
-            GetAOEAttackContacts();
+            GetAOEAttackContacts(explosionInfo);
+
+            Debug.Log("Boom!");
 
             for (int i = 0; i < _contactsEntities.Count; i++)
-                if (_contactsEntities.Items[i].HasComponent<TakeDamageRequest>())
-                    _contactsEntities.Items[i].TakeDamageRequest.Invoke(_damage.Value);
+                if (_contactsEntities.Items[i].HasComponent<TakeDamageRequest>() && EntitiesHelper.IsSameTeam(_sourceEntity, _contactsEntities.Items[i]) == false)
+                    _contactsEntities.Items[i].TakeDamageRequest.Invoke(explosionInfo.Damage);
         }
 
-        private void GetAOEAttackContacts()
+        private void GetAOEAttackContacts(AOEInfoStruct explosionInfo)
         {
             _contacts.Count = Physics.OverlapSphereNonAlloc(
-                _transform.position,
-                _radius.Value,
+                explosionInfo.Position,
+                explosionInfo.Radius,
                 _contacts.Items,
-                _damageMask,
+                explosionInfo.DamageMask,
                 QueryTriggerInteraction.Ignore);
 
             RemoveSelfFromContacts();

@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: GameplayEconomyConfig
   m_EditorClassIdentifier: 
   <StatsResetPrice>k__BackingField: 30
-  <VictoryReward>k__BackingField: 10
-  <DefeatFee>k__BackingField: 5
+  <VictoryReward>k__BackingField: 50
+  <DefeatFee>k__BackingField: 0

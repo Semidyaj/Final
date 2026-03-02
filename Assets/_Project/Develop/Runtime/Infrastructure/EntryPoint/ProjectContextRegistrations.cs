@@ -1,5 +1,8 @@
-﻿using Assets._Project.Develop.Runtime.Infrastructure.DI;
+﻿using Assets._Project.Develop.Runtime.Configs.Meta.Economy;
+using Assets._Project.Develop.Runtime.Gameplay.Features.RewardsService;
+using Assets._Project.Develop.Runtime.Infrastructure.DI;
 using Assets._Project.Develop.Runtime.Meta.Features.LevelsProgression;
+using Assets._Project.Develop.Runtime.Meta.Features.StatisticsService;
 using Assets._Project.Develop.Runtime.Meta.Features.Wallet;
 using Assets._Project.Develop.Runtime.UI;
 using Assets._Project.Develop.Runtime.UI.Core;
@@ -51,6 +54,25 @@ namespace Assets._Project.Develop.Runtime.Infrastructure.EntryPoint
             container.RegisterAsSingle(CreateTimerServiceFactory);
 
             container.RegisterAsSingle(CreateLevelsProgressionService).NonLazy();
+
+            container.RegisterAsSingle(CreateGameplayEconomyConfig);
+
+            container.RegisterAsSingle(CreateGameplayRewardsService);
+
+            container.RegisterAsSingle(CreateGameplayStatisticsService).NonLazy();
+        }
+
+        private static GameplayStatisticsService CreateGameplayStatisticsService(DIContainer c)
+    => new GameplayStatisticsService(c.Resolve<PlayerDataProvider>(), c.Resolve<ICoroutinesPerformer>());
+
+        private static GameplayRewardsService CreateGameplayRewardsService(DIContainer c)
+            => new GameplayRewardsService(c.Resolve<WalletService>(), c.Resolve<GameplayEconomyConfig>());
+
+        private static GameplayEconomyConfig CreateGameplayEconomyConfig(DIContainer c)
+        {
+            ConfigsProviderService configsProviderService = c.Resolve<ConfigsProviderService>();
+
+            return configsProviderService.GetConfig<GameplayEconomyConfig>();
         }
 
         private static TimerServiceFactory CreateTimerServiceFactory(DIContainer c)

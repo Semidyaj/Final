@@ -11,6 +11,7 @@ namespace Assets._Project.Develop.Runtime.Utilities.LayersConstsGenerated
 	public static readonly int LayerCharacters = LayerMask.NameToLayer("Characters");
 	public static readonly int LayerProjectiles = LayerMask.NameToLayer("Projectiles");
 	public static readonly int LayerEnviroment = LayerMask.NameToLayer("Enviroment");
+	public static readonly int LayerGround = LayerMask.NameToLayer("Ground");
 
 	public static readonly int LayerMaskDefault = 1 << LayerDefault;
 	public static readonly int LayerMaskTransparentFX = 1 << LayerTransparentFX;
@@ -20,5 +21,6 @@ namespace Assets._Project.Develop.Runtime.Utilities.LayersConstsGenerated
 	public static readonly int LayerMaskCharacters = 1 << LayerCharacters;
 	public static readonly int LayerMaskProjectiles = 1 << LayerProjectiles;
 	public static readonly int LayerMaskEnviroment = 1 << LayerEnviroment;
+	public static readonly int LayerMaskGround = 1 << LayerGround;
 	}
 }

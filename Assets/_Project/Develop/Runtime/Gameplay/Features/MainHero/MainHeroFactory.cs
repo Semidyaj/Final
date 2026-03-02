@@ -33,15 +33,16 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.MainHero
         {
             HeroConfig config = _configProviderService.GetConfig<HeroConfig>();
 
-            Entity entity = _entitiesFactory.CreateHeroEntity(position, config);
+            Entity entity = _entitiesFactory.CreateHeroTowerDefenderEntity(position, config);
+            //Entity entity = _entitiesFactory.CreateHeroEntity(position, config);
 
             entity
                 .AddIsMainHero()
                 .AddTeam(new ReactiveVariable<Teams>(Teams.MainHero));
 
-            entity.AddCurrentTarget();
-            _brainsFactory.CreateMainHeroBrain(entity, new NearestDamagableTargetSelector(entity));
-            //_brainsFactory.CreateMainInputHeroBrain(entity);
+            //entity.AddCurrentTarget();
+            //_brainsFactory.CreateMainHeroBrain(entity, new NearestDamagableTargetSelector(entity));
+            _brainsFactory.CreateMainInputHeroBrain(entity);
 
             _entitiesLifeContext.Add(entity);
 

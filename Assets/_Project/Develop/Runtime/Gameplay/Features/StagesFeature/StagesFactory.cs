@@ -25,6 +25,13 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.StagesFeature
                         _container.Resolve<EnemiesFactory>(),
                         _container.Resolve<EntitiesLifeContext>());
 
+                case TowerDefenseStageConfig towerDefenseStageConfig:
+
+                    return new TowerDefenseStage(
+                        towerDefenseStageConfig,
+                        _container.Resolve<EnemiesFactory>(),
+                        _container.Resolve<EntitiesLifeContext>());
+
                 default:
                     throw new ArgumentException($"Not supported {stageConfig.GetType()} type config");
             }

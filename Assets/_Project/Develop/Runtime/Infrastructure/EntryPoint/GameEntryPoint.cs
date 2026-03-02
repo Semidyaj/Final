@@ -15,11 +15,7 @@ namespace Assets._Project.Develop.Runtime.Infrastructure.EntryPoint
     {
         private void Awake()
         {
-            Debug.Log("Start project, setup settings");
-
             SetupAddSettings();
-
-            Debug.Log("Registry process");
 
             DIContainer projectContainer = new DIContainer();
 
@@ -44,8 +40,6 @@ namespace Assets._Project.Develop.Runtime.Infrastructure.EntryPoint
 
             loadingScreen.Show();
 
-            Debug.Log("Start initialization");
-
             yield return container.Resolve<ConfigsProviderService>().LoadAsync();
 
             bool isPlayerDataSaveExists = false;
@@ -57,7 +51,7 @@ namespace Assets._Project.Develop.Runtime.Infrastructure.EntryPoint
             else
                 playerDataProvider.Reset();
 
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(0.5f);
 
             Debug.Log("Initialization finished");
 

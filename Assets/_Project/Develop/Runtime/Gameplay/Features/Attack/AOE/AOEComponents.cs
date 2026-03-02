@@ -39,4 +39,24 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.Attack.AOE
     {
         public Buffer<Entity> Value;
     }
+
+    public class AOEAttackRequest : IEntityComponent
+    {
+        public ReactiveEvent<AOEInfoStruct> Value;
+    }
+
+    public class AOEAttackEvent : IEntityComponent
+    {
+        public ReactiveEvent Value;
+    }
+
+    public class IsAOEAttackEnded : IEntityComponent
+    {
+        public ReactiveVariable<bool> Value;
+    }
+
+    public class AOEAttackTargetPoint : IEntityComponent
+    {
+        public ReactiveVariable<Vector3> Value;
+    }
 }

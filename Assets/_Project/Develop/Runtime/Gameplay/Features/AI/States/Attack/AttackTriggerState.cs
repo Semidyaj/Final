@@ -2,7 +2,7 @@
 using Assets._Project.Develop.Runtime.Utilities.Reactive;
 using Assets._Project.Develop.Runtime.Utilities.StateMachineCore;
 
-namespace Assets._Project.Develop.Runtime.Gameplay.Features.AI.States
+namespace Assets._Project.Develop.Runtime.Gameplay.Features.AI.States.Attack
 {
     public class AttackTriggerState : State, IUpdatableState
     {

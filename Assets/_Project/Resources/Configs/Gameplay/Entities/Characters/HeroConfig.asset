@@ -15,9 +15,11 @@ MonoBehaviour:
   <PrefabPath>k__BackingField: Entities/Hero
   <MoveSpeed>k__BackingField: 10
   <RotationSpeed>k__BackingField: 900
-  <AttackProcessTime>k__BackingField: 1.5
-  <AttackDelayTime>k__BackingField: 0.75
+  <AttackProcessTime>k__BackingField: 1.6333
+  <AttackDelayTime>k__BackingField: 1.2666
   <AttackCooldown>k__BackingField: 1
   <InstantAttackDamage>k__BackingField: 50
+  <AOEAttackDamage>k__BackingField: 100
+  <AOEAttackRadius>k__BackingField: 3
   <MaxHealth>k__BackingField: 100
-  <DeathProcessTime>k__BackingField: 2
+  <DeathProcessTime>k__BackingField: 3.5

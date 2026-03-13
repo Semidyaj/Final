@@ -27,9 +27,9 @@ namespace Assets._Project.Develop.Runtime.Gameplay.States
 
         public PreparationState CreatePreparationState()
             => new PreparationState(
-                _container.Resolve<PreperationTriggerService>(),
+                _container.Resolve<PointClickExplosionService>(),
                 _container.Resolve<PointClickMiningService>(),
-                _container.Resolve<PointClickExplosionService>());
+                _container.Resolve<PreperationTriggerService>());
 
         public StageProcessState CreateStageProcessState()
             => new StageProcessState(_container.Resolve<StageProviderService>());

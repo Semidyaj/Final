@@ -14,9 +14,9 @@ namespace Assets._Project.Develop.Runtime.Gameplay.States
         private readonly PointClickExplosionService _explosionService;
 
         public PreparationState(
-            PreperationTriggerService triggerService, 
+            PointClickExplosionService explosionService,
             PointClickMiningService miningService, 
-            PointClickExplosionService explosionService)
+            PreperationTriggerService triggerService)
         {
             _triggerService = triggerService;
             _miningService = miningService;

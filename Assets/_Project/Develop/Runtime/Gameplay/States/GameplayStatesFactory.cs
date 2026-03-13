@@ -9,10 +9,10 @@ using Assets._Project.Develop.Runtime.Gameplay.Features.StagesFeature;
 using Assets._Project.Develop.Runtime.Gameplay.Infrastructure;
 using Assets._Project.Develop.Runtime.Infrastructure.DI;
 using Assets._Project.Develop.Runtime.Meta.Features.LevelsProgression;
+using Assets._Project.Develop.Runtime.UI.Gameplay;
 using Assets._Project.Develop.Runtime.Utilities.Conditions;
 using Assets._Project.Develop.Runtime.Utilities.CoroutinesManager;
 using Assets._Project.Develop.Runtime.Utilities.DataManagment.DataProviders;
-using Assets._Project.Develop.Runtime.Utilities.SceneManagment;
 
 namespace Assets._Project.Develop.Runtime.Gameplay.States
 {
@@ -40,17 +40,16 @@ namespace Assets._Project.Develop.Runtime.Gameplay.States
                 _container.Resolve<LevelsProgressionService>(),
                 inputArgs,
                 _container.Resolve<PlayerDataProvider>(),
-                _container.Resolve<SceneSwitcherService>(),
                 _container.Resolve<ICoroutinesPerformer>(),
                 _container.Resolve<GameplayResultHandler>(),
-                _container.Resolve<GameplayRewardsService>());
+                _container.Resolve<GameplayRewardsService>(),
+                _container.Resolve<GameplayPopupService>());
 
         public DefeatState CreateDefeatState()
             => new DefeatState(
                 _container.Resolve<IInputService>(),
-                _container.Resolve<SceneSwitcherService>(),
-                _container.Resolve<ICoroutinesPerformer>(),
-                _container.Resolve<GameplayResultHandler>());
+                _container.Resolve<GameplayResultHandler>(),
+                _container.Resolve<GameplayPopupService>());
 
         public GameplayStateMachine CreateGameplayStateMachine(GameplayInputArgs inputArgs)
         {

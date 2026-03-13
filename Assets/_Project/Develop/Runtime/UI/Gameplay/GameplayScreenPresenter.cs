@@ -1,47 +1,31 @@
-﻿//using Assets._Project.Develop.Runtime.Gameplay.Features;
-//using Assets._Project.Develop.Runtime.UI.Core;
-//using Assets._Project.Develop.Runtime.Utilities.Reactive;
-//using System;
+﻿using Assets._Project.Develop.Runtime.UI.Core;
+using System.Collections.Generic;
 
-//namespace Assets._Project.Develop.Runtime.UI.Gameplay
-//{
-//    public class GameplayScreenPresenter : IPresenter
-//    {
-//        private readonly GameplayScreenView _screen;
+namespace Assets._Project.Develop.Runtime.UI.Gameplay
+{
+    public class GameplayScreenPresenter : IPresenter
+    {
+        private readonly GameplayScreenView _screen;
 
-//        private readonly GameMode _gameMode;
+        private readonly List<IPresenter> _childPresenters = new();
 
-//        private readonly IReadOnlyVariable<string> _guessedString;
-//        private readonly IReadOnlyVariable<string> _resultString;
+        public GameplayScreenPresenter(GameplayScreenView screen)
+        {
+            _screen = screen;
+        }
 
-//        private IDisposable _disposableGuessed;
-//        private IDisposable _disposableInput;
+        public void Initialize()
+        {
+            foreach (IPresenter presenter in _childPresenters)
+                presenter.Initialize();
+        }
 
-//        public GameplayScreenPresenter(GameplayScreenView screen, GameMode gameMode)
-//        {
-//            _screen = screen;
-//            _gameMode = gameMode;
+        public void Dispose()
+        {
+            foreach (IPresenter presenter in _childPresenters)
+                presenter.Dispose();
 
-//            _guessedString = _gameMode.GuessedString;
-//            _resultString = _gameMode.ResultString;
-//        }
-
-//        public void Initialize()
-//        {
-//            _disposableGuessed = _guessedString.Subscribe(OnTextGenerated);
-//            _disposableInput = _resultString.Subscribe(OnInputTextChanged);
-//        }
-
-//        public void Dispose()
-//        {
-//            _disposableGuessed.Dispose();
-//            _disposableInput.Dispose();
-//        }
-
-//        private void OnInputTextChanged(string oldText, string newText) => UpdateInputValue(newText);
-//        private void OnTextGenerated(string oldText, string newText) => UpdateGuessedValue(newText);
-
-//        private void UpdateGuessedValue(string value) => _screen.SetGeneratedText(value);
-//        private void UpdateInputValue(string value) => _screen.SetInputText(value);
-//    }
-//}
+            _childPresenters.Clear();
+        }
+    }
+}

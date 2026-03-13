@@ -10,5 +10,7 @@
         public const string GameplayScreen = nameof(GameplayScreen);
         public const string WinStatsView = nameof(WinStatsView);
         public const string DefeatStatsView = nameof(DefeatStatsView);
+        public const string WinPopup = nameof(WinPopup);
+        public const string DefeatPopup = nameof(DefeatPopup);
     }
 }

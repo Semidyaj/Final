@@ -20,6 +20,8 @@ namespace Assets._Project.Develop.Runtime.UI.Core
             {ViewsIDs.GameplayScreen, "UI/Gameplay/GameplayScreenView" },
             {ViewsIDs.WinStatsView, "UI/Statistics/WinView" },
             {ViewsIDs.DefeatStatsView, "UI/Statistics/DefeatView" },
+            {ViewsIDs.WinPopup, "UI/Gameplay/WinPopup" },
+            {ViewsIDs.DefeatPopup, "UI/Gameplay/DefeatPopup" },
         };
 
         public ViewsFactory(ResourcesAssetsLoader resourcesAssetsLoader)

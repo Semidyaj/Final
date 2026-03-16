@@ -37,12 +37,8 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.LifeCycle
             _isDeadChangedDisposable.Dispose();
         }
 
-        private void OnIsDeadChanged(bool oldIsDead, bool isDead)
-        {
-            Debug.Log($"Dead changed: {oldIsDead} -> {isDead}");
-            UpdateIsDead(isDead);
-        }
-            
+        private void OnIsDeadChanged(bool oldIsDead, bool isDead) => UpdateIsDead(isDead);
+
         private void UpdateIsDead(bool value) => _animator.SetBool(IsDeadKey, value);
     }
 }

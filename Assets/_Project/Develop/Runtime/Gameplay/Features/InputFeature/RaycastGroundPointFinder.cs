@@ -58,8 +58,6 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.InputFeature
             }
 
             _isPositionFound.Value = isPositionFound;
-
-            Debug.Log(isPositionFound);
         }
     }
 }

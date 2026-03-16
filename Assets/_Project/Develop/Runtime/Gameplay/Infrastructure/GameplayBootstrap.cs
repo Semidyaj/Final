@@ -7,6 +7,7 @@ using Assets._Project.Develop.Runtime.Gameplay.Features.MainHero;
 using Assets._Project.Develop.Runtime.Gameplay.States;
 using Assets._Project.Develop.Runtime.Infrastructure;
 using Assets._Project.Develop.Runtime.Infrastructure.DI;
+using Assets._Project.Develop.Runtime.UI.Gameplay;
 using Assets._Project.Develop.Runtime.Utilities.ConfigsManagment;
 using Assets._Project.Develop.Runtime.Utilities.CoroutinesManager;
 using Assets._Project.Develop.Runtime.Utilities.SceneManagment;
@@ -19,6 +20,8 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Infrastructure
     public class GameplayBootstrap : SceneBootstrap
     {
         private DIContainer _container;
+
+        private GameplayScreenPresenter _gameplayScreenPresenter;
 
         private GameplayStatesContext _gameplayStatesContext;
 
@@ -48,10 +51,12 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Infrastructure
 
             yield return configsProviderService.LoadAsync();
 
+            _gameplayScreenPresenter = _container.Resolve<GameplayScreenPresenter>();
+
             _entitiesLifeContext = _container.Resolve<EntitiesLifeContext>();
             _brainsContext = _container.Resolve<AIBrainsContext>();
 
-            _container.Resolve<MainHeroFactory>().Create(Vector3.zero);
+            _container.Resolve<MainHeroFactory>().Create(Vector3.zero + new Vector3(0, 0, -2));
 
             _gameplayStatesContext = _container.Resolve<GameplayStatesContext>();
 
@@ -80,6 +85,11 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Infrastructure
                 ICoroutinesPerformer coroutinesPerformer = _container.Resolve<ICoroutinesPerformer>();
                 coroutinesPerformer.StartPerform(sceneSwitcherService.ProcessSwitchTo(Scenes.MainMenu));
             }
+        }
+
+        private void LateUpdate()
+        {
+            _gameplayScreenPresenter?.LateUpdate();
         }
     }
 }

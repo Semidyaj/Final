@@ -20,8 +20,10 @@ namespace Assets._Project.Develop.Runtime.UI.Core
             {ViewsIDs.GameplayScreen, "UI/Gameplay/GameplayScreenView" },
             {ViewsIDs.WinStatsView, "UI/Statistics/WinView" },
             {ViewsIDs.DefeatStatsView, "UI/Statistics/DefeatView" },
-            {ViewsIDs.WinPopup, "UI/Gameplay/WinPopup" },
-            {ViewsIDs.DefeatPopup, "UI/Gameplay/DefeatPopup" },
+            {ViewsIDs.WinPopup, "UI/Gameplay/ResultPopup/WinPopup" },
+            {ViewsIDs.DefeatPopup, "UI/Gameplay/ResultPopup/DefeatPopup" },
+            {ViewsIDs.SimpleHealthBar, "UI/Gameplay/HealthBars/SimpleHealthBar" },
+            {ViewsIDs.MainHeroHealthBar, "UI/Gameplay/HealthBars/HeroHealthBar" },
         };
 
         public ViewsFactory(ResourcesAssetsLoader resourcesAssetsLoader)

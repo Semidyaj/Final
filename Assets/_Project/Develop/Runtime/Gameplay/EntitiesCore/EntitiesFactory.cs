@@ -68,7 +68,6 @@ namespace Assets._Project.Develop.Runtime.Gameplay.EntitiesCore
                 .AddContactsDetectingMask(UnityLayers.LayerMaskCharacters)
                 .AddContactCollidersBuffer(new Buffer<Collider>(64))
                 .AddContactEntitiesBuffer(new Buffer<Entity>(64))
-                //.AddIsTouchAnotherTeam()
                 .AddTeam(new ReactiveVariable<Teams>(Teams.MainHero));
 
             ICompositeCondition mustDie = new CompositeCondition()
@@ -79,7 +78,6 @@ namespace Assets._Project.Develop.Runtime.Gameplay.EntitiesCore
                 .Add(new FuncCondition(() => entity.InDeathProcess.Value == false));
 
             ICompositeCondition canApplyDamage = new CompositeCondition()
-                //.Add(new FuncCondition(() => entity.IsTouchAnotherTeam.Value))
                 .Add(new FuncCondition(() => entity.IsDead.Value == false));
 
             entity
@@ -90,7 +88,6 @@ namespace Assets._Project.Develop.Runtime.Gameplay.EntitiesCore
             entity
                 .AddSystem(new BodyContactsDetectingSystem())
                 .AddSystem(new BodyContactsEntitiesFilterSystem(_colidersRegistryService))
-                //.AddSystem(new AnotherTeamTouchDetectorSystem())
                 .AddSystem(new ApplyDamageSystem())
                 .AddSystem(new DeathSystem())
                 .AddSystem(new DisableCollidersOnDeathSystem())

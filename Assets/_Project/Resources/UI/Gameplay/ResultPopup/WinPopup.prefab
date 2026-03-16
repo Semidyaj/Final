@@ -311,8 +311,8 @@ GameObject:
   - component: {fileID: 2995288955022321673}
   - component: {fileID: 3807815288856356647}
   - component: {fileID: 6485474587352935262}
-  - component: {fileID: -8992125161136381805}
   - component: {fileID: 475337383176129263}
+  - component: {fileID: -8992125161136381805}
   m_Layer: 5
   m_Name: WinPopup
   m_TagString: Untagged
@@ -361,27 +361,6 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &-8992125161136381805
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2219860527864101367}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3f5236d039881e146b5c9a9d142a07bf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _mainGroup: {fileID: 6485474587352935262}
-  _anticlicker: {fileID: 1860485218499670390}
-  _body: {fileID: 2879895918109050050}
-  _animationType: 2
-  _title: {fileID: 6712164681374077475}
-  _stars:
-  - {fileID: 4859986557059480654}
-  - {fileID: 6031376299594769342}
-  - {fileID: 1194154400046476031}
 --- !u!114 &475337383176129263
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -412,6 +391,27 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+--- !u!114 &-8992125161136381805
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2219860527864101367}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f5236d039881e146b5c9a9d142a07bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _mainGroup: {fileID: 6485474587352935262}
+  _anticlicker: {fileID: 1860485218499670390}
+  _body: {fileID: 2879895918109050050}
+  _animationType: 2
+  _title: {fileID: 6712164681374077475}
+  _stars:
+  - {fileID: 4859986557059480654}
+  - {fileID: 6031376299594769342}
+  - {fileID: 1194154400046476031}
 --- !u!1 &2997040699537179786
 GameObject:
   m_ObjectHideFlags: 0
@@ -1151,7 +1151,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 4826313182357897673, guid: 9d8214cf336eb5841a63525b3faf437e, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

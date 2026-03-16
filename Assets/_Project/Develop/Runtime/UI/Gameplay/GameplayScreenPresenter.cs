@@ -1,47 +1,59 @@
-﻿//using Assets._Project.Develop.Runtime.Gameplay.Features;
-//using Assets._Project.Develop.Runtime.UI.Core;
-//using Assets._Project.Develop.Runtime.Utilities.Reactive;
-//using System;
+﻿using Assets._Project.Develop.Runtime.UI.Core;
+using Assets._Project.Develop.Runtime.UI.Gameplay.HealthDisplay;
+using Assets._Project.Develop.Runtime.UI.Gameplay.Stages;
+using System.Collections.Generic;
 
-//namespace Assets._Project.Develop.Runtime.UI.Gameplay
-//{
-//    public class GameplayScreenPresenter : IPresenter
-//    {
-//        private readonly GameplayScreenView _screen;
+namespace Assets._Project.Develop.Runtime.UI.Gameplay
+{
+    public class GameplayScreenPresenter : IPresenter
+    {
+        private readonly GameplayScreenView _screen;
+        private readonly GameplayPresentersFactory _presentersFactory;
 
-//        private readonly GameMode _gameMode;
+        private EntitiesHealthDisplayPresenter _entitiesHealthDisplayPresenter;
 
-//        private readonly IReadOnlyVariable<string> _guessedString;
-//        private readonly IReadOnlyVariable<string> _resultString;
+        private readonly List<IPresenter> _childPresenters = new();
 
-//        private IDisposable _disposableGuessed;
-//        private IDisposable _disposableInput;
+        public GameplayScreenPresenter(GameplayScreenView screen, GameplayPresentersFactory presentersFactory)
+        {
+            _screen = screen;
+            _presentersFactory = presentersFactory;
+        }
 
-//        public GameplayScreenPresenter(GameplayScreenView screen, GameMode gameMode)
-//        {
-//            _screen = screen;
-//            _gameMode = gameMode;
+        public void Initialize()
+        {
+            CreateStageNumber();
+            CreateEntitiesHealthDisplay();
 
-//            _guessedString = _gameMode.GuessedString;
-//            _resultString = _gameMode.ResultString;
-//        }
+            foreach (IPresenter presenter in _childPresenters)
+                presenter.Initialize();
+        }
 
-//        public void Initialize()
-//        {
-//            _disposableGuessed = _guessedString.Subscribe(OnTextGenerated);
-//            _disposableInput = _resultString.Subscribe(OnInputTextChanged);
-//        }
+        public void LateUpdate()
+        {
+            _entitiesHealthDisplayPresenter.LateUpdate();
+        }
 
-//        public void Dispose()
-//        {
-//            _disposableGuessed.Dispose();
-//            _disposableInput.Dispose();
-//        }
+        public void Dispose()
+        {
+            foreach (IPresenter presenter in _childPresenters)
+                presenter.Dispose();
 
-//        private void OnInputTextChanged(string oldText, string newText) => UpdateInputValue(newText);
-//        private void OnTextGenerated(string oldText, string newText) => UpdateGuessedValue(newText);
+            _childPresenters.Clear();
+        }
 
-//        private void UpdateGuessedValue(string value) => _screen.SetGeneratedText(value);
-//        private void UpdateInputValue(string value) => _screen.SetInputText(value);
-//    }
-//}
+        private void CreateStageNumber()
+        {
+            StagePresenter stagePresenter = _presentersFactory.CreateStagePresenter(_screen.StageNumberView);
+
+            _childPresenters.Add(stagePresenter);
+        }
+
+        private void CreateEntitiesHealthDisplay()
+        {
+            _entitiesHealthDisplayPresenter = _presentersFactory.CreateEntitiesHealthDisplayPresenter(_screen.EntitiesHealthDisplay);
+
+            _childPresenters.Add(_entitiesHealthDisplayPresenter);
+        }
+    }
+}

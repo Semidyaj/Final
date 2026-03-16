@@ -15,8 +15,12 @@ using Assets._Project.Develop.Runtime.Gameplay.States;
 using Assets._Project.Develop.Runtime.Infrastructure.DI;
 using Assets._Project.Develop.Runtime.Meta.Features.StatisticsService;
 using Assets._Project.Develop.Runtime.Meta.Features.Wallet;
+using Assets._Project.Develop.Runtime.UI;
+using Assets._Project.Develop.Runtime.UI.Core;
+using Assets._Project.Develop.Runtime.UI.Gameplay;
 using Assets._Project.Develop.Runtime.Utilities.AssetsManagment;
 using Assets._Project.Develop.Runtime.Utilities.ConfigsManagment;
+using UnityEngine;
 
 namespace Assets._Project.Develop.Runtime.Gameplay.Infrastructure
 {
@@ -33,6 +37,11 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Infrastructure
             container.RegisterAsSingle(CreateEntitiesLifeContext);
 
             container.RegisterAsSingle(CreateAlliesFactory);
+
+            container.RegisterAsSingle(CreateGameplayScreenPresenter).NonLazy();
+            container.RegisterAsSingle(CreateGameplayUIRoot).NonLazy();
+            container.RegisterAsSingle(CreateGameplayPresentersFactory);
+            container.RegisterAsSingle(CreateGameplayPopupService);
 
             container.RegisterAsSingle(CreateCollidersRegistryService);
 
@@ -61,6 +70,40 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Infrastructure
 
             container.RegisterAsSingle(CreateGameplayResultHandler).NonLazy();
         }
+
+        private static GameplayPopupService CreateGameplayPopupService(DIContainer c)
+            => new GameplayPopupService(
+                c.Resolve<ViewsFactory>(),
+                c.Resolve<ProjectPresentersFactory>(),
+                c.Resolve<GameplayUIRoot>(),
+                c.Resolve<GameplayPresentersFactory>());
+
+        private static GameplayUIRoot CreateGameplayUIRoot(DIContainer c)
+        {
+            ResourcesAssetsLoader loader = new ResourcesAssetsLoader();
+
+            GameplayUIRoot gameplayUIRootPrefab = loader.Load<GameplayUIRoot>("UI/Gameplay/GameplayUIRoot");
+
+            return Object.Instantiate(gameplayUIRootPrefab);
+        }
+
+        private static GameplayScreenPresenter CreateGameplayScreenPresenter(DIContainer c)
+        {
+            GameplayUIRoot uiRoot = c.Resolve<GameplayUIRoot>();
+
+            GameplayScreenView view = c
+                .Resolve<ViewsFactory>()
+                .Create<GameplayScreenView>(ViewsIDs.GameplayScreen, uiRoot.HUDLayer);
+
+            GameplayScreenPresenter presenter = c
+                .Resolve<GameplayPresentersFactory>()
+                .CreateGameplayScreenPresenter(view);
+
+            return presenter;
+        }
+
+        private static GameplayPresentersFactory CreateGameplayPresentersFactory(DIContainer c)
+            => new GameplayPresentersFactory(c, _inputArgs);
 
         private static PointClickExplosionService CreatePointClickExplosionService(DIContainer c)
             => new PointClickExplosionService(c.Resolve<MainHeroHolderService>());

@@ -64,8 +64,6 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.Attack.AOE
         {
             GetAOEAttackContacts(explosionInfo);
 
-            Debug.Log("Boom!");
-
             for (int i = 0; i < _contactsEntities.Count; i++)
                 if (_contactsEntities.Items[i].HasComponent<TakeDamageRequest>() && EntitiesHelper.IsSameTeam(_sourceEntity, _contactsEntities.Items[i]) == false)
                     _contactsEntities.Items[i].TakeDamageRequest.Invoke(explosionInfo.Damage);

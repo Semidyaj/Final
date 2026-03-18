@@ -1,4 +1,5 @@
 ﻿using Assets._Project.Develop.Runtime.Gameplay.Features.InputFeature;
+using Assets._Project.Develop.Runtime.Gameplay.Features.PauseFeature;
 using Assets._Project.Develop.Runtime.Gameplay.Features.ResultHandler;
 using Assets._Project.Develop.Runtime.UI.Gameplay;
 using Assets._Project.Develop.Runtime.Utilities.StateMachineCore;
@@ -12,8 +13,9 @@ namespace Assets._Project.Develop.Runtime.Gameplay.States
 
         public DefeatState(
             IInputService inputService,
+            IPauseService pauseService,
             GameplayResultHandler gameplayResultHandler,
-            GameplayPopupService gameplayPopupService) : base(inputService)
+            GameplayPopupService gameplayPopupService) : base(inputService, pauseService)
         {
             _gameplayResultHandler = gameplayResultHandler;
             _gameplayPopupService = gameplayPopupService;

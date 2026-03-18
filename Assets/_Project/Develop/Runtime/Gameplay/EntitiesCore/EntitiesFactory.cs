@@ -16,6 +16,8 @@ using Assets._Project.Develop.Runtime.Gameplay.Features.MovementFeature;
 using Assets._Project.Develop.Runtime.Gameplay.Features.Sensors;
 using Assets._Project.Develop.Runtime.Gameplay.Features.SpawnFeature;
 using Assets._Project.Develop.Runtime.Gameplay.Features.StagesFeature;
+using Assets._Project.Develop.Runtime.Gameplay.Features.StatsFeature;
+using Assets._Project.Develop.Runtime.Gameplay.Features.StatsFeature.SynchronizerSystems;
 using Assets._Project.Develop.Runtime.Gameplay.Features.TeamsFeature;
 using Assets._Project.Develop.Runtime.Infrastructure.DI;
 using Assets._Project.Develop.Runtime.Meta.Features.Wallet;
@@ -23,6 +25,7 @@ using Assets._Project.Develop.Runtime.Utilities;
 using Assets._Project.Develop.Runtime.Utilities.Conditions;
 using Assets._Project.Develop.Runtime.Utilities.LayersConstsGenerated;
 using Assets._Project.Develop.Runtime.Utilities.Reactive;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets._Project.Develop.Runtime.Gameplay.EntitiesCore
@@ -103,14 +106,27 @@ namespace Assets._Project.Develop.Runtime.Gameplay.EntitiesCore
 
             _monoEntitiesFactory.Create(entity, position, "Entities/Hero");
 
+            Dictionary<StatTypes, float> baseStats = new()
+            {
+                {StatTypes.MoveSpeed, config.MoveSpeed },
+                {StatTypes.MaxHealth, config.MaxHealth },
+                {StatTypes.Damage, config.AOEAttackDamage },
+                {StatTypes.AttackRadius, config.AOEAttackRadius },
+            };
+
+            Dictionary<StatTypes, float> modifiedStats = new(baseStats);
+
             entity
+                .AddStatsEffects()
+                .AddBaseStats(baseStats)
+                .AddModifiesStats(modifiedStats)
                 .AddMoveDirection()
-                .AddMoveSpeed(new ReactiveVariable<float>(config.MoveSpeed))
+                .AddMoveSpeed(new ReactiveVariable<float>(baseStats[StatTypes.MoveSpeed]))
                 .AddIsMoving()
                 .AddRotationDirection()
                 .AddRotationSpeed(new ReactiveVariable<float>(config.RotationSpeed))
-                .AddMaxHealth(new ReactiveVariable<float>(config.MaxHealth))
-                .AddCurrentHealth(new ReactiveVariable<float>(config.MaxHealth))
+                .AddMaxHealth(new ReactiveVariable<float>(baseStats[StatTypes.MaxHealth]))
+                .AddCurrentHealth(new ReactiveVariable<float>(baseStats[StatTypes.MaxHealth]))
                 .AddIsDead()
                 .AddInDeathProcess()
                 .AddDeathProcessInitialTime(new ReactiveVariable<float>(config.DeathProcessTime))
@@ -120,8 +136,8 @@ namespace Assets._Project.Develop.Runtime.Gameplay.EntitiesCore
                 .AddAOEAttackRequest()
                 .AddAOEAttackEvent()
                 .AddAOEAttackTargetPoint()
-                .AddAOEDamage(new ReactiveVariable<float>(config.AOEAttackDamage))
-                .AddAOERadius(new ReactiveVariable<float>(config.AOEAttackRadius))
+                .AddAOEDamage(new ReactiveVariable<float>(baseStats[StatTypes.Damage]))
+                .AddAOERadius(new ReactiveVariable<float>(baseStats[StatTypes.AttackRadius]))
                 .AddAOETakeDamageMask(UnityLayers.LayerMaskCharacters)
                 .AddAOECollidersBuffer(new Buffer<Collider>(64))
                 .AddAOEEntitiesBuffer(new Buffer<Entity>(64))
@@ -159,6 +175,11 @@ namespace Assets._Project.Develop.Runtime.Gameplay.EntitiesCore
                 .AddMustSelfRelease(mustSelfRelease);
 
             entity
+                .AddSystem(new StatEffectsApplierSystem())
+                .AddSystem(new AttackRadiusStatSynchronizerSystem())
+                .AddSystem(new DamageStatSynchronizerSystem())
+                .AddSystem(new MaxHealthStatSynchronizerSystem())
+                .AddSystem(new MoveSpeedStatSynchronizerSystem())
                 .AddSystem(new RigidbodyMovementSystem())
                 .AddSystem(new RigidbodyRotationSystem())
                 .AddSystem(new RaycastGroundPointFinder(UnityLayers.LayerMaskGround))

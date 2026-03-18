@@ -3,6 +3,7 @@ using Assets._Project.Develop.Runtime.Gameplay.Features.Attack.Mining;
 using Assets._Project.Develop.Runtime.Gameplay.Features.Attack.PointClickExplosion;
 using Assets._Project.Develop.Runtime.Gameplay.Features.InputFeature;
 using Assets._Project.Develop.Runtime.Gameplay.Features.MainHero;
+using Assets._Project.Develop.Runtime.Gameplay.Features.PauseFeature;
 using Assets._Project.Develop.Runtime.Gameplay.Features.ResultHandler;
 using Assets._Project.Develop.Runtime.Gameplay.Features.RewardsService;
 using Assets._Project.Develop.Runtime.Gameplay.Features.StagesFeature;
@@ -37,6 +38,7 @@ namespace Assets._Project.Develop.Runtime.Gameplay.States
         public WinState CreateWinState(GameplayInputArgs inputArgs)
             => new WinState(
                 _container.Resolve<IInputService>(),
+                _container.Resolve<IPauseService>(),
                 _container.Resolve<LevelsProgressionService>(),
                 inputArgs,
                 _container.Resolve<PlayerDataProvider>(),
@@ -48,6 +50,7 @@ namespace Assets._Project.Develop.Runtime.Gameplay.States
         public DefeatState CreateDefeatState()
             => new DefeatState(
                 _container.Resolve<IInputService>(),
+                _container.Resolve<IPauseService>(),
                 _container.Resolve<GameplayResultHandler>(),
                 _container.Resolve<GameplayPopupService>());
 

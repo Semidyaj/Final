@@ -1,13 +1,18 @@
-﻿using Assets._Project.Develop.Runtime.Configs.Gameplay.Levels;
+﻿using Assets._Project.Develop.Runtime.Configs.Gameplay.Abilities;
+using Assets._Project.Develop.Runtime.Configs.Gameplay.Levels;
 using Assets._Project.Develop.Runtime.Gameplay.EntitiesCore;
 using Assets._Project.Develop.Runtime.Gameplay.EntitiesCore.Mono;
+using Assets._Project.Develop.Runtime.Gameplay.Features.AbilitiesFeature;
+using Assets._Project.Develop.Runtime.Gameplay.Features.AbilitiesFeature.AbilitiesDroppingFeature;
 using Assets._Project.Develop.Runtime.Gameplay.Features.AI;
 using Assets._Project.Develop.Runtime.Gameplay.Features.Allies;
 using Assets._Project.Develop.Runtime.Gameplay.Features.Attack.Mining;
 using Assets._Project.Develop.Runtime.Gameplay.Features.Attack.PointClickExplosion;
 using Assets._Project.Develop.Runtime.Gameplay.Features.Enemies;
 using Assets._Project.Develop.Runtime.Gameplay.Features.InputFeature;
+using Assets._Project.Develop.Runtime.Gameplay.Features.LevelUpFeature;
 using Assets._Project.Develop.Runtime.Gameplay.Features.MainHero;
+using Assets._Project.Develop.Runtime.Gameplay.Features.PauseFeature;
 using Assets._Project.Develop.Runtime.Gameplay.Features.ResultHandler;
 using Assets._Project.Develop.Runtime.Gameplay.Features.RewardsService;
 using Assets._Project.Develop.Runtime.Gameplay.Features.StagesFeature;
@@ -20,6 +25,7 @@ using Assets._Project.Develop.Runtime.UI.Core;
 using Assets._Project.Develop.Runtime.UI.Gameplay;
 using Assets._Project.Develop.Runtime.Utilities.AssetsManagment;
 using Assets._Project.Develop.Runtime.Utilities.ConfigsManagment;
+using Assets._Project.Develop.Runtime.Utilities.CoroutinesManager;
 using UnityEngine;
 
 namespace Assets._Project.Develop.Runtime.Gameplay.Infrastructure
@@ -37,6 +43,11 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Infrastructure
             container.RegisterAsSingle(CreateEntitiesLifeContext);
 
             container.RegisterAsSingle(CreateAlliesFactory);
+
+            container.RegisterAsSingle(CreateAbilitiesFactory);
+            container.RegisterAsSingle(CreateAbilitiesDroppingRulesService);
+            container.RegisterAsSingle(CreateAbilityDropService);
+            container.RegisterAsSingle(CreateDropAbilityOnMainHeroLevelUpService).NonLazy();
 
             container.RegisterAsSingle(CreateGameplayScreenPresenter).NonLazy();
             container.RegisterAsSingle(CreateGameplayUIRoot).NonLazy();
@@ -62,6 +73,8 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Infrastructure
             container.RegisterAsSingle(CreatePointClickMiningService);
             container.RegisterAsSingle(CreatePointClickExplosionService);
 
+            container.RegisterAsSingle<IPauseService>(CreareTimeScalePauseService);
+
             container.RegisterAsSingle<IInputService>(CreateDesktopInput);
 
             container.RegisterAsSingle(CreateMainHeroHolderService).NonLazy();
@@ -70,6 +83,27 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Infrastructure
 
             container.RegisterAsSingle(CreateGameplayResultHandler).NonLazy();
         }
+
+        private static TimeScalePauseService CreareTimeScalePauseService(DIContainer c)
+            => new TimeScalePauseService();
+
+        private static DropAbilityOnMainHeroLevelUpService CreateDropAbilityOnMainHeroLevelUpService(DIContainer c)
+            => new DropAbilityOnMainHeroLevelUpService(
+                c.Resolve<MainHeroHolderService>(),
+                c.Resolve<GameplayPopupService>(),
+                c.Resolve<ICoroutinesPerformer>(),
+                c.Resolve<IPauseService>());
+
+        private static AbilityDropService CreateAbilityDropService(DIContainer c)
+            => new AbilityDropService(
+                c.Resolve<ConfigsProviderService>().GetConfig<AbilitiesConfigsContainer>(),
+                c.Resolve<AbilitiesDroppingRulesService>());
+
+        private static AbilitiesDroppingRulesService CreateAbilitiesDroppingRulesService(DIContainer c)
+            => new AbilitiesDroppingRulesService();
+
+        private static AbilitiesFactory CreateAbilitiesFactory(DIContainer c)
+            => new AbilitiesFactory(c);
 
         private static GameplayPopupService CreateGameplayPopupService(DIContainer c)
             => new GameplayPopupService(

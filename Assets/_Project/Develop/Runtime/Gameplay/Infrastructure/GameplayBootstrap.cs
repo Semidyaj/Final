@@ -31,6 +31,8 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Infrastructure
 
         private AIBrainsContext _brainsContext;
 
+        private MainHeroHolderService _mainHeroHolderService;
+
         public override void ProcessRegistrations(DIContainer container, IInputSceneArgs sceneArgs = null)
         {
             _container = container;
@@ -66,6 +68,8 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Infrastructure
             TowerConfig towerConfig = _container.Resolve<ConfigsProviderService>().GetConfig<TowerConfig>();
 
             _container.Resolve<AlliesFactory>().Create(levelConfig.Position, towerConfig, levelConfig);
+
+            _mainHeroHolderService = _container.Resolve<MainHeroHolderService>();
         }
 
         public override void Run()
@@ -85,6 +89,9 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Infrastructure
                 ICoroutinesPerformer coroutinesPerformer = _container.Resolve<ICoroutinesPerformer>();
                 coroutinesPerformer.StartPerform(sceneSwitcherService.ProcessSwitchTo(Scenes.MainMenu));
             }
+
+            if (Input.GetKeyDown(KeyCode.Space))
+                _mainHeroHolderService.MainHero.Experience.Value += 1000;
         }
 
         private void LateUpdate()

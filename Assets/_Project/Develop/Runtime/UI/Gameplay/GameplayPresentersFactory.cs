@@ -1,12 +1,20 @@
-﻿using Assets._Project.Develop.Runtime.Gameplay.EntitiesCore;
+﻿using Assets._Project.Develop.Runtime.Configs.Gameplay.Abilities;
+using Assets._Project.Develop.Runtime.Configs.Gameplay.Experience;
+using Assets._Project.Develop.Runtime.Gameplay.EntitiesCore;
+using Assets._Project.Develop.Runtime.Gameplay.Features.AbilitiesFeature;
+using Assets._Project.Develop.Runtime.Gameplay.Features.AbilitiesFeature.AbilitiesDroppingFeature;
+using Assets._Project.Develop.Runtime.Gameplay.Features.MainHero;
 using Assets._Project.Develop.Runtime.Gameplay.Features.StagesFeature;
 using Assets._Project.Develop.Runtime.Gameplay.Infrastructure;
 using Assets._Project.Develop.Runtime.Infrastructure.DI;
 using Assets._Project.Develop.Runtime.UI.CommonViews;
 using Assets._Project.Develop.Runtime.UI.Core;
+using Assets._Project.Develop.Runtime.UI.Gameplay.AbilitySelectPopup;
+using Assets._Project.Develop.Runtime.UI.Gameplay.Experience;
 using Assets._Project.Develop.Runtime.UI.Gameplay.HealthDisplay;
 using Assets._Project.Develop.Runtime.UI.Gameplay.ResultPopups;
 using Assets._Project.Develop.Runtime.UI.Gameplay.Stages;
+using Assets._Project.Develop.Runtime.Utilities.ConfigsManagment;
 using Assets._Project.Develop.Runtime.Utilities.CoroutinesManager;
 using Assets._Project.Develop.Runtime.Utilities.SceneManagment;
 
@@ -51,5 +59,24 @@ namespace Assets._Project.Develop.Runtime.UI.Gameplay
                 view,
                 this,
                 _container.Resolve<ViewsFactory>());
+
+        public SelectableAbilityPresenter CreateSelectableAbilityPresenter(AbilityConfig abilityConfig, SelectableAbilityView view, Entity entity)
+            => new SelectableAbilityPresenter(abilityConfig, view, _container.Resolve<AbilitiesFactory>(), entity);
+
+        public AbilitySelectPopupPresenter CreateAbilitySelectPopupPresenter(AbilitySelectPopupView view, Entity entity, int level)
+            => new AbilitySelectPopupPresenter(
+                _container.Resolve<ICoroutinesPerformer>(),
+                view,
+                entity,
+                this,
+                _container.Resolve<AbilityDropService>(),
+                _container.Resolve<ViewsFactory>(),
+                level);
+
+        public MainHeroExperiencePresenter CreateMainHeroExperiencePresenter(BarWithText view)
+            => new MainHeroExperiencePresenter(
+                view,
+                _container.Resolve<MainHeroHolderService>(),
+                _container.Resolve<ConfigsProviderService>().GetConfig<ExperienceForUpgradeLevelConfig>());
     }
 }

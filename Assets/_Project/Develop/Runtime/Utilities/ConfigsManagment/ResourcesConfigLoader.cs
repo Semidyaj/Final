@@ -1,4 +1,6 @@
+using Assets._Project.Develop.Runtime.Configs.Gameplay.Abilities;
 using Assets._Project.Develop.Runtime.Configs.Gameplay.Entities;
+using Assets._Project.Develop.Runtime.Configs.Gameplay.Experience;
 using Assets._Project.Develop.Runtime.Configs.Gameplay.Levels;
 using Assets._Project.Develop.Runtime.Configs.Meta.Economy;
 using Assets._Project.Develop.Runtime.Configs.Meta.Wallet;
@@ -23,6 +25,8 @@ namespace Assets._Project.Develop.Runtime.Utilities.ConfigsManagment
             {typeof(HeroConfig), "Configs/Gameplay/Entities/Characters/HeroConfig" },
             {typeof(TowerConfig), "Configs/Gameplay/Entities/Characters/TowerConfig" },
             {typeof(HomeworkHeroConfig), "Configs/Gameplay/Entities/Characters/HomeworkHeroConfig" },
+            {typeof(AbilitiesConfigsContainer), "Configs/Gameplay/Abilities/AbilitiesConfigsContainer" },
+            {typeof(ExperienceForUpgradeLevelConfig), "Configs/Gameplay/Experience/ExperienceForUpgradeLevelConfig" },
         };
 
         public ResourcesConfigLoader(ResourcesAssetsLoader resources)

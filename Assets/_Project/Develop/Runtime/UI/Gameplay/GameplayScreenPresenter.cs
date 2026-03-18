@@ -1,4 +1,5 @@
 ﻿using Assets._Project.Develop.Runtime.UI.Core;
+using Assets._Project.Develop.Runtime.UI.Gameplay.Experience;
 using Assets._Project.Develop.Runtime.UI.Gameplay.HealthDisplay;
 using Assets._Project.Develop.Runtime.UI.Gameplay.Stages;
 using System.Collections.Generic;
@@ -24,6 +25,7 @@ namespace Assets._Project.Develop.Runtime.UI.Gameplay
         {
             CreateStageNumber();
             CreateEntitiesHealthDisplay();
+            CreateExpirienceView();
 
             foreach (IPresenter presenter in _childPresenters)
                 presenter.Initialize();
@@ -54,6 +56,13 @@ namespace Assets._Project.Develop.Runtime.UI.Gameplay
             _entitiesHealthDisplayPresenter = _presentersFactory.CreateEntitiesHealthDisplayPresenter(_screen.EntitiesHealthDisplay);
 
             _childPresenters.Add(_entitiesHealthDisplayPresenter);
+        }
+
+        private void CreateExpirienceView()
+        {
+            MainHeroExperiencePresenter experiencePresenter = _presentersFactory.CreateMainHeroExperiencePresenter(_screen.ExperienceBarView);
+
+            _childPresenters.Add(experiencePresenter);
         }
     }
 }
